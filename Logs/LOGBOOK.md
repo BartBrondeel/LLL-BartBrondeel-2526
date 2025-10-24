@@ -10,7 +10,7 @@
 
 | Weekcode | Periode | Thema's | Link |
 |-----------|----------|----------|------|
-| 25W43 | 20.10 – 24.10 | Random, lijsten, For loop, while loop, functies, herhalingen | [Bekijk week 25W43](25w43.md) |
+| 25W43 | 20.10 – 24.10 | Random, lijsten, For loop, while loop, functies, herhalingen | [Bekijk week 25W43](25W43) |
 
 ---
 
