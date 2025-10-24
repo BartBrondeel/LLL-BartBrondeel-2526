@@ -35,5 +35,5 @@
 *Start:* 15:245 | *Einde:* 17:45 | *Dag:* 8
 *Onderwerp:* Functies met input
 *Printscreen*
-![Python omgeving](images/oktober_2025/vrijdag_24_oktober.png)
+![Python omgeving](images/oktober_2025/vrijdag_24_okober.png)
 
