@@ -13,3 +13,8 @@
 *Printscreen*
 ![Python omgeving – random en lijsten](images/oktober_2025/maandag_20_oktober.png)
 
+### 📅 Dinsdag 21/10
+*Start:* 18:00 | *Einde:* 20:00 | *Dag:* 5 
+*Onderwerp:* For loop in combinatie met lijsten en de functie range
+*Printscreen*
+![Python omgeving – random en lijsten](images/oktober_2025/dinsdag_21_oktober.png)
