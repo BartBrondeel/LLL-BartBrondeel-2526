@@ -1,39 +1,20 @@
-# 📚 Logboek Python Zelfstudie – Bart Brondeel
+# 📚 Logboek Python Zelfstudie – Overzicht
 
-> **Periode:** 15 oktober 2025 – 06 juni 2026
-> **Doel:** Oefenen met Python via zelfstudie (Udemy + praktijkvoorbeelden)  
+> **Auteur:** Bart Brondeel  
+> **Periode:** 29 september 2025 – 6 juni 2026  
+> **Doel:** Oefenen met Python via zelfstudie (Udemy + praktijkvoorbeelden)
 
 ---
 
-## 🗓️ Week 25W43 (20.10.25 – 24.10.25)
+## 📅 Overzicht per week
 
-### 📅 Maandag 20/10
-*Start:* 18:20 | *Einde:* 20:20 | *Dag:* 4 
-*Onderwerp:* Random en lijsten
-*Printscreen*
-![Python omgeving](images/oktober_2025/maandag_20_oktober.png)
+| Weekcode | Periode | Thema's | Link |
+|-----------|----------|----------|------|
+| 25W43 | 20.10 – 24.10 | Random, lijsten, For loop, while loop, functies, herhalingen | [Bekijk week 25W43](week25w43.md) |
 
-### 📅 Dinsdag 21/10
-*Start:* 18:00 | *Einde:* 20:00 | *Dag:* 5 
-*Onderwerp:* For loop in combinatie met lijsten en de functie range
-*Printscreen*
-![Python omgeving](images/oktober_2025/dinsdag_21_oktober.png)
+---
 
-### 📅 Woensdag 22/10
-*Start:* 14:45 | *Einde:* 17:45 | *Dag:* 6 
-*Onderwerp:* while loops en functies
-*Printscreen*
-![Python omgeving](images/oktober_2025/woensdag_22_oktober.png)
+> 📎 **Tip:** Klik op de weeklink om het volledige dagverslag en screenshots te bekijken.
 
-### 📅 Donderdag 23/10
-*Start:* 09:15 | *Einde:* 13:15 | *Dag:* 7 
-*Onderwerp:* Alles wat we tot hiertoe hebben gezien oefenen (HANGMAN game gemaakt)
-*Printscreen*
-![Python omgeving](images/oktober_2025/donderdag_23_oktober.png)
 
-### 📅 Vrijdag 24/10
-*Start:* 15:245 | *Einde:* 17:45 | *Dag:* 8
-*Onderwerp:* Functies met input
-*Printscreen*
-![Python omgeving](images/oktober_2025/vrijdag_24_okober.png)
 
