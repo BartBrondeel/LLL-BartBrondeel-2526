@@ -31,7 +31,7 @@
 *Printscreen*
 ![Python omgeving – random en lijsten](images/oktober_2025/donderdag_23_oktober.png)
 
-### 📅 Maandag 24/10
+### 📅 Vrijdag 24/10
 *Start:* 15:245 | *Einde:* 17:45 | *Dag:* 8
 *Onderwerp:* Functies met input
 *Printscreen*
