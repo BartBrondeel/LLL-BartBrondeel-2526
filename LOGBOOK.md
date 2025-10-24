@@ -18,3 +18,22 @@
 *Onderwerp:* For loop in combinatie met lijsten en de functie range
 *Printscreen*
 ![Python omgeving – random en lijsten](images/oktober_2025/dinsdag_21_oktober.png)
+
+### 📅 Woensdag 22/10
+*Start:* 14:45 | *Einde:* 17:45 | *Dag:* 6 
+*Onderwerp:* while loops en functies
+*Printscreen*
+![Python omgeving – random en lijsten](images/oktober_2025/woensdag_22_oktober.png)
+
+### 📅 Donderdag 23/10
+*Start:* 09:15 | *Einde:* 13:15 | *Dag:* 7 
+*Onderwerp:* Alles wat we tot hiertoe hebben gezien oefenen (HANGMAN game gemaakt)
+*Printscreen*
+![Python omgeving – random en lijsten](images/oktober_2025/donderdag_23_oktober.png)
+
+### 📅 Maandag 24/10
+*Start:* 15:245 | *Einde:* 17:45 | *Dag:* 8
+*Onderwerp:* Functies met input
+*Printscreen*
+![Python omgeving – random en lijsten](images/oktober_2025/vrijdag_24_oktober.png)
+
