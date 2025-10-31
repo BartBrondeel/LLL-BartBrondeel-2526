@@ -12,6 +12,14 @@
 |-----------|----------|----------|------|
 | 25W43 | 20.10 – 24.10 | Random, lijsten, For loop, while loop, functies, herhalingen | [Bekijk week 25W43](Logs/25W43.md) |
 | 25W44 | 20.10 – 24.10 | Dictionary, functies met output, docstrings, calculator, Blackjack | [Bekijk week 25W44](Logs/25W44.md) |
+| 25W45 | 03.11 – 07.11 | ............................ | [Bekijk week 25W45](Logs/25W45.md) |
+| 25W46 | 10.11 – 14.11 | ............................ | [Bekijk week 25W46](Logs/25W46.md) |
+| 25W47 | 17.11 – 21.11 | ............................ | [Bekijk week 25W47](Logs/25W47.md) |
+| 25W48 | 24.11 – 28.11 | ............................ | [Bekijk week 25W48](Logs/25W48.md) |
+| 25W49 | 01.12 – 05.12 | ............................ | [Bekijk week 25W49](Logs/25W49.md) |
+| 25W50 | 08.12 – 12.12 | ............................ | [Bekijk week 25W50](Logs/25W50.md) |
+| 25W51 | 15.12 – 19.12 | ............................ | [Bekijk week 25W51](Logs/25W51.md) |
+| 25W52 | 22.12 – 26.12 | ............................ | [Bekijk week 25W52](Logs/25W52.md) |
 
 ---
 
