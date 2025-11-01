@@ -11,7 +11,7 @@
 | Weekcode | Periode | Thema's | Link |
 |-----------|----------|----------|------|
 | 25W43 | 20.10 – 24.10 | Random, lijsten, For loop, while loop, functies, herhalingen | [Bekijk week 25W43](Logs/25W43.md) |
-| 25W44 | 20.10 – 24.10 | Dictionary, functies met output, docstrings, calculator, Blackjack | [Bekijk week 25W44](Logs/25W44.md) |
+| 25W44 | 20.10 – 24.10 | Dictionary, functies met output, docstrings, calculator, Blackjack, Debugging, Higher-lower | [Bekijk week 25W44](Logs/25W44.md) |
 | 25W45 | 03.11 – 07.11 | ............................ | [Bekijk week 25W45](Logs/25W45.md) |
 | 25W46 | 10.11 – 14.11 | ............................ | [Bekijk week 25W46](Logs/25W46.md) |
 | 25W47 | 17.11 – 21.11 | ............................ | [Bekijk week 25W47](Logs/25W47.md) |
