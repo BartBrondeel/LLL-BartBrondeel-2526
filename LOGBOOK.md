@@ -3,7 +3,8 @@
 > **Auteur:** Bart Brondeel  
 > **Periode:** 29 september 2025 – 6 juni 2026  
 > **Doel:** Oefenen met Python via zelfstudie (Udemy + praktijkvoorbeelden)
-> **Actieplan/planning:** Actieplan + dagelijkse logging (leertijd) ![Python omgeving](../LLL-BartBrondeel-2526/Opstart_documenten/Actieplan_Python.xlsx)
+> **Actieplan/planning:** Actieplan + dagelijkse logging (leertijd) <br>
+![Python omgeving](../LLL-BartBrondeel-2526/Opstart_documenten/Actieplan_Python.xlsx)
 
 ---
 
