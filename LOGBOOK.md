@@ -18,7 +18,7 @@
 | 25W48 | 24.11 – 28.11 | Deze week alle lessen gereviewd van dag 1 tot en met dag 15                                                         | [Bekijk week 25W48](Logs/25W48.md) |
 | 25W49 | 01.12 – 05.12 | Quiz Game, Tekenen + tuple, schildpadden Race, Snake Game, Pong Game                                                | [Bekijk week 25W49](Logs/25W49.md) |
 | 25W50 | 08.12 – 12.12 | Bestanden lezen, schrijven en sluiten, csv bestanden (pandas), lists-dictionary comprehension, Import tkinter, first GUI program, BlokTimer | [Bekijk week 25W50](Logs/25W50.md) |
-| 25W51 | 15.12 – 19.12 | Password generator, Errors, Exceptions and JSON Data, Flash Cards,Automated email (Python Anywhere)                  | [Bekijk week 25W51](Logs/25W51.md) |
+| 25W51 | 15.12 – 19.12 | Password generator, Errors, Exceptions and JSON Data, Flash Cards,Automated email (Python Anywhere), API Where is ISS, Quizzler APP | [Bekijk week 25W51](Logs/25W51.md) |
 | 25W52 | 22.12 – 26.12 | ............................ | [Bekijk week 25W52](Logs/25W52.md) |
 
 ---
