@@ -4,7 +4,7 @@
 > **Periode:** 29 september 2025 – 6 juni 2026  
 > **Doel:** Oefenen met Python via zelfstudie (Udemy + praktijkvoorbeelden) <br>
 > **Actieplan/planning:** Actieplan + dagelijkse logging (leertijd) <br>
-[Actieplan/planning](Opstart_documenten/Actieplan_Python_git.csv
+[Actieplan/planning](Opstart_documenten/Actieplan_Python.xlsx)
 
 ---
 
