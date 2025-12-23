@@ -21,7 +21,7 @@
 | 25W49 | 01.12 – 05.12 | Quiz Game, Tekenen + tuple, schildpadden Race, Snake Game, Pong Game                                                | [Bekijk week 25W49](Logs/25W49.md) |
 | 25W50 | 08.12 – 12.12 | Bestanden lezen, schrijven en sluiten, csv bestanden (pandas), lists-dictionary comprehension, Import tkinter, first GUI program, BlokTimer | [Bekijk week 25W50](Logs/25W50.md) |
 | 25W51 | 15.12 – 19.12 | Password generator, Errors, Exceptions and JSON Data, Flash Cards,Automated email (Python Anywhere), API Where is ISS, Quizzler APP | [Bekijk week 25W51](Logs/25W51.md) |
-| 25W52 | 22.12 – 26.12 | ............................ | [Bekijk week 25W52](Logs/25W52.md) |
+| 25W52 | 22.12 – 26.12 | Sending SMS via the Twilio API | [Bekijk week 25W52](Logs/25W52.md) |
 
 ---
 
