@@ -22,6 +22,8 @@
 | 25W50 | 08.12 – 12.12 | Bestanden lezen, schrijven en sluiten, csv bestanden (pandas), lists-dictionary comprehension, Import tkinter, first GUI program, BlokTimer | [Bekijk week 25W50](Logs/25W50.md) |
 | 25W51 | 15.12 – 19.12 | Password generator, Errors, Exceptions and JSON Data, Flash Cards,Automated email (Python Anywhere), API Where is ISS, Quizzler APP | [Bekijk week 25W51](Logs/25W51.md) |
 | 25W52 | 22.12 – 26.12 | Sending SMS via the Twilio API, Stock News Monitoring Project | [Bekijk week 25W52](Logs/25W52.md) |
+| 26W14 | 30.03 – 03.04 | Programma's op nieuwe laptop zetten (oude = defect) herhaling van Python gestart was te lang geleden | [Bekijk week 26W14](Logs/26W14.md) |
+
 
 ---
 
