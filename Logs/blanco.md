@@ -1,0 +1,36 @@
+### 🗓️ Week 26W17 (20.04.26 – 24.04.26)
+
+## 📅 Maandag 20/04
+*Start:* 15:00 | *Einde:* 21:30 |  *Dag:* 37 en 38 <br>
+*Onderwerp:* HTTP Requests, Get, Post, Put, Delete / Setup API  referenties en spreadsheet<br>
+*Printscreen*
+![Python omgeving](../images/april_2026/maandag_20_april_main1.png)
+![Python omgeving](../images/april_2026/maandag_20_april_main2.png)
+![Python omgeving](../images/april_2026/maandag_20_april_main3.png)
+![Python omgeving](../images/april_2026/maandag_20_april_main4.png)
+
+## 📅 Dinsdag 21/04
+*Start:* 09:00 | *Einde:* 16:30 |  *Dag:* <br>
+*Onderwerp:* ................ <br>
+*Printscreen*
+![Python omgeving](../images/oktober_2025/)
+
+## 📅 Woensdag 22/04
+*Start:* 09:00 | *Einde:* 16:30 | *Dag:*  <br>
+*Onderwerp:* ................ <br>
+*Printscreen*
+![Python omgeving](../images/oktober_2025/)
+
+## 📅 Donderdag 23/04
+*Start:* 00:00 | *Einde:* 00:00 | *Dag:*  <br>
+*Onderwerp:* ................ <br>
+*Printscreen*
+![Python omgeving](../images/oktober_2025/)
+
+## 📅 Vrijdag 24/04
+*Start:* 00:00 | *Einde:* 00:00 | *Dag:*  <br>
+*Onderwerp:* ................ <br>
+*Printscreen*
+![Python omgeving](../images/oktober_2025/)
+
+
