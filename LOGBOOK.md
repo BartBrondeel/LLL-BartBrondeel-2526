@@ -22,6 +22,11 @@
 | 25W50 | 08.12 – 12.12 | Bestanden lezen, schrijven en sluiten, csv bestanden (pandas), lists-dictionary comprehension, Import tkinter, first GUI program, BlokTimer | [Bekijk week 25W50](Logs/25W50.md) |
 | 25W51 | 15.12 – 19.12 | Password generator, Errors, Exceptions and JSON Data, Flash Cards,Automated email (Python Anywhere), API Where is ISS, Quizzler APP | [Bekijk week 25W51](Logs/25W51.md) |
 | 25W52 | 22.12 – 26.12 | Sending SMS via the Twilio API, Stock News Monitoring Project | [Bekijk week 25W52](Logs/25W52.md) |
+| 26W14 | 30.03 – 03.04 | Programma's op nieuwe laptop zetten (oude = defect) herhaling van Python gestart was te lang geleden,  review dag 1 tot en met dag 6| [Bekijk week 26W14](Logs/26W14.md) |
+| 26W15 | 06.04 – 10.04 | review dag 7 tot en met dag 22 | [Bekijk week 26W15](Logs/26W15.md) |
+| 26W16 | 13.04 – 17.04 | review dag 23 tot en met dag 36 | [Bekijk week 26W16](Logs/26W16.md) |
+| 26W17 | 20.04 – 24.04 | HTTP Requests, Get, Post, Put, Delete / Setup API  referenties en spreadsheet | [Bekijk week 26W17](Logs/26W17.md) |
+
 
 ---
 
