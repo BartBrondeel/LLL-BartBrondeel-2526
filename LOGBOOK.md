@@ -25,7 +25,7 @@
 | 26W14 | 30.03 – 03.04 | Programma's op nieuwe laptop zetten (oude = defect) herhaling van Python gestart was te lang geleden,  review dag 1 tot en met dag 6| [Bekijk week 26W14](Logs/26W14.md) |
 | 26W15 | 06.04 – 10.04 | review dag 7 tot en met dag 22 | [Bekijk week 26W15](Logs/26W15.md) |
 | 26W16 | 13.04 – 17.04 | review dag 23 tot en met dag 36 | [Bekijk week 26W16](Logs/26W16.md) |
-| 26W17 | 20.04 – 24.04 | HTTP Requests, Get, Post, Put, Delete / Setup API  referenties en spreadsheet / HTML, CSS | [Bekijk week 26W17](Logs/26W17.md) |
+| 26W17 | 20.04 – 24.04 | HTTP Requests, Get, Post, Put, Delete / Setup API  referenties en spreadsheet / HTML, CSS / Web Scraping| [Bekijk week 26W17](Logs/26W17.md) |
 
 
 ---
