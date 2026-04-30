@@ -29,7 +29,7 @@ review dag 1 tot en met dag 6                                                   
 | 26W15 | 06.04 – 10.04 | review dag 7 tot en met dag 22                                                                        | [Bekijk week 26W15](Logs/26W15.md) |
 | 26W16 | 13.04 – 17.04 | review dag 23 tot en met dag 36                                                                       | [Bekijk week 26W16](Logs/26W16.md) |
 | 26W17 | 20.04 – 24.04 | HTTP Requests, Get, Post, Put, Delete / Setup API referenties en spreadsheet / HTML, CSS / WebScraping| [Bekijk week 26W17](Logs/26W17.md) |
-| 26W18 | 27.04 – 01.05 | Web Scraping /Web Development with Flask / bootstrap                                                  | [Bekijk week 26W18](Logs/26W18.md) |
+| 26W18 | 27.04 – 01.05 | Web Scraping /Web Development with Flask / bootstrap / start eindwerk                                 | [Bekijk week 26W18](Logs/26W18.md) |
 
 
 ---
