@@ -1,0 +1,123 @@
+# =============================================================
+#  .gitignore — Energie Dashboard
+#  Bestanden die NIET naar GitHub mogen worden geüpload.
+#
+#  Regel: alles wat persoonlijk, tijdelijk of automatisch
+#         gegenereerd is hoort NIET in GitHub.
+# =============================================================
+
+
+# =====================
+#  Python tijdelijke bestanden
+#  Deze worden automatisch aangemaakt door Python zelf
+# =====================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+
+# =====================
+#  Virtuele omgeving (.venv)
+#  Jouw .venv map bevat alle geïnstalleerde bibliotheken.
+#  Die installeert iedereen zelf via: pip install -r requirements.txt
+#  Nooit uploaden want het zijn duizenden bestanden!
+# =====================
+.venv/
+venv/
+env/
+ENV/
+
+
+# =====================
+#  Geheime sleutels en configuratie
+#  API-sleutels, wachtwoorden en IP-adressen horen
+#  NOOIT in GitHub — dit is een veiligheidsregel!
+#  Maak een .env bestand aan voor geheimen (zie hieronder)
+# =====================
+.env
+*.env
+config_local.py
+secrets.py
+
+
+# =====================
+#  Database bestanden
+#  Worden lokaal aangemaakt en zijn te groot voor GitHub
+# =====================
+*.db
+*.sqlite
+*.sqlite3
+
+
+# =====================
+#  Data bestanden
+#  CSV exports van Fluvius of andere bronnen
+#  Bevatten persoonlijke verbruiksdata — niet publiek zetten!
+# =====================
+data/*.csv
+data/*.json
+data/*.xlsx
+
+
+# =====================
+#  Log bestanden
+#  Worden automatisch aangemaakt tijdens het draaien
+# =====================
+*.log
+logs/
+
+
+# =====================
+#  IDE instellingen (editors)
+#  Jij gebruikt waarschijnlijk VS Code of PyCharm
+#  Deze mappen zijn persoonlijke instellingen van jouw PC
+# =====================
+
+# VS Code
+.vscode/
+
+# PyCharm / JetBrains
+.idea/
+*.iml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+
+# =====================
+#  Windows systeembestanden
+#  Worden automatisch aangemaakt door Windows Verkenner
+# =====================
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+
+# =====================
+#  macOS systeembestanden
+#  (voor als medestudenten een Mac gebruiken)
+# =====================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+
+# =====================
+#  Pytest (testresultaten)
+#  Worden aangemaakt als je tests uitvoert
+# =====================
+.pytest_cache/
+.coverage
+htmlcov/
+
+
+# =====================
+#  Build bestanden
+#  Worden aangemaakt als je je project verpakt
+# =====================
+dist/
+build/
+*.egg-info/
