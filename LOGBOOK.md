@@ -31,6 +31,7 @@ review dag 1 tot en met dag 6                                                   
 | 26W17 | 20.04 – 24.04 | HTTP Requests, Get, Post, Put, Delete / Setup API referenties en spreadsheet / HTML, CSS / WebScraping| [Bekijk week 26W17](Logs/26W17.md) |
 | 26W18 | 27.04 – 01.05 | Web Scraping /Web Development with Flask / bootstrap / start eindwerk                                 | [Bekijk week 26W18](Logs/26W18.md) |
 | 26W19 | 04.05 – 08.05 | Git, Github and Version control / Web application / Data exploration / Data Visualisation             | [Bekijk week 26W19](Logs/26W19.md) |
+| 26W20 | 11.05 – 15.05 | Alle geziene leerstof herhalen door oefeningen, dit is vanad dag 81 tot 100.                          | [Bekijk week 26W20](Logs/26W20.md) |
 
 ---
 
