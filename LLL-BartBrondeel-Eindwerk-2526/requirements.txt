@@ -1,1 +1,10 @@
-flask==3.0.0          # Webserver en routing
+# =============================================================
+#  requirements.txt — Energie Dashboard
+#  Installeer alles met: pip install -r requirements.txt
+#
+#  Sessie 1: flask
+#  Sessie 2: python-dotenv (toegevoegd)
+# =============================================================
+
+flask==3.0.0           # Webserver en routing
+python-dotenv==1.0.0   # Laadt .env bestand in (geheimen buiten de code)
