@@ -32,7 +32,7 @@ review dag 1 tot en met dag 6                                                   
 | 26W18 | 27.04 – 01.05 | Web Scraping /Web Development with Flask / bootstrap / start eindwerk                                 | [Bekijk week 26W18](Logs/26W18.md) |
 | 26W19 | 04.05 – 08.05 | Git, Github and Version control / Web application / Data exploration / Data Visualisation             | [Bekijk week 26W19](Logs/26W19.md) |
 | 26W20 | 11.05 – 15.05 | Alle geziene leerstof herhalen door oefeningen, dit is vanad dag 81 tot 100.                          | [Bekijk week 26W20](Logs/26W20.md) |
-| 26W20 | 18.05 – 22.05 | Start Python Mega Course: Build 20 Real-World Apps And AI Agents, + start eindwerk en Portfolio       | [Bekijk week 26W20](Logs/26W20.md) |
+| 26W21 | 18.05 – 22.05 | Start Python Mega Course: Build 20 Real-World Apps And AI Agents, + start eindwerk en Portfolio       | [Bekijk week 26W21](Logs/26W21.md) |
 
 ---
 
