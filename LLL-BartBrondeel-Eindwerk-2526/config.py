@@ -3,7 +3,6 @@
   config.py — Configuratie voor het Energie Dashboard
   Student:   Bart Brondeel
   Opleiding: Graduaat Programmeren - Odisee
-  Sessie:    2 — Config klasse + python-dotenv integratie
 
   OOP principe: alle instellingen zitten in 1 klasse
   DRY principe: verander een waarde hier, werkt overal

@@ -3,24 +3,28 @@
   app.py — Energie Dashboard
   Student:   Bart Brondeel
   Opleiding: Graduaat Programmeren - Odisee
-  Versie:    0.2 — Config klasse geintegreerd
+  Versie:    0.3 — HomeWizardMeter klasse toegevoegd
 
-  Wijziging t.o.v. sessie 1:
-  - Losse variabelen vervangen door Config klasse
-  - Config wordt geimporteerd uit config.py
+  Wijziging t.o.v. sessie 2:
+  - Nieuwe route /meter toegevoegd
+  - HomeWizardMeter wordt hier gebruikt
 =============================================================
 """
 
 # --- Externe bibliotheken ---
-from flask import Flask
+from flask import Flask, jsonify
 
 # --- Eigen modules ---
-from config import Config  # Onze nieuwe configuratieklasse
+from config import Config
+from meter import HomeWizardMeter
 
 # =====================
 #  Flask app aanmaken
 # =====================
 app = Flask(__name__)
+
+# Maak 1 meter-object aan — wordt hergebruikt in alle routes (DRY)
+meter = HomeWizardMeter()
 
 
 # =====================
@@ -29,24 +33,37 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    """
-    Startpagina van het dashboard.
-    Toont ook de actieve configuratie als test.
-    Wordt in sessie 8 vervangen door echte HTML-pagina.
-    """
+    
     return f"""
         <h1>Energie Dashboard</h1>
         <p>Project is opgestart.</p>
         <hr>
-        <h3>Actieve configuratie (test sessie 2):</h3>
+        <h3>Beschikbare pagina's:</h3>
         <ul>
-            <li>HomeWizard IP: {Config.HOMEWIZARD_IP}</li>
-            <li>Piekprijs: {Config.PRIJS_PIEK_PER_KWH} EUR/kWh</li>
-            <li>Dalprijs: {Config.PRIJS_DAL_PER_KWH} EUR/kWh</li>
-            <li>Debug modus: {Config.DEBUG}</li>
+            <li><a href="/meter">Meterdata (JSON)</a></li>
+            <li><a href="/meter/info">Meterinformatie (JSON)</a></li>
         </ul>
-        <p><em>Deze testpagina verdwijnt in sessie 8.</em></p>
+        <p><em>Mooie pagina volgt in sessie 8.</em></p>
     """
+
+
+@app.route("/meter")
+def meter_data():
+    """
+    Geef actuele meterdata terug als JSON.
+
+    jsonify() zet een Python dict om naar een nette JSON-respons
+    die elke browser of applicatie kan lezen.
+    """
+    data = meter.get_samenvatting()
+    return jsonify(data)
+
+
+@app.route("/meter/info")
+def meter_info():
+    """Geef basisinformatie over de meter terug als JSON."""
+    info = meter.get_info()
+    return jsonify(info)
 
 
 # =====================
@@ -54,4 +71,5 @@ def index():
 # =====================
 if __name__ == "__main__":
     print(f"Energie Dashboard wordt opgestart op http://localhost:{Config.PORT}")
+    print(f"Meterdata bekijken: http://localhost:{Config.PORT}/meter")
     app.run(debug=Config.DEBUG, port=Config.PORT)
