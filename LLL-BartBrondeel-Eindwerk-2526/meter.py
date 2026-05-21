@@ -5,19 +5,18 @@
   Opleiding: Graduaat Programmeren - Odisee
 
   OOP principe: alle meter-logica zit in 1 klasse
-  DRY principe: IP-adres staat 1x in Config, nergens anders
+  DRY principe: IP-adres staat 1 keer in Config, nergens anders
 
   De HomeWizard P1 meter heeft een ingebouwde webserver.
   Via een eenvoudige HTTP-aanvraag krijgen we alle data
   als JSON terug — geen extra bibliotheek nodig.
 
   API documentatie:
-  https://api-documentation.homewizard.com/docs/category/p1-meter
+  https://api-documentation.homewizard.com/docs/v1/measurement
 =============================================================
 """
 
 # --- Standaard bibliotheken ---
-import json
 from datetime import datetime
 
 # --- Externe bibliotheken ---
@@ -26,26 +25,49 @@ import requests         # Verstuurt HTTP-aanvragen naar de meter
 # --- Eigen modules ---
 from config import Config
 
+def _get_simulatie(self) -> dict:
+    """
+    Geef nep-data terug als de meter niet bereikbaar is.
+    Gebruikt dezelfde veldnamen als de echte meter.
+    """
+    return {
+        "tijdstip":                 datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+        "huidig_vermogen_w":        850,
+        "huidig_vermogen_kw":       0.850,
+        "vermogen_fase1_w":         400,
+        "vermogen_fase2_w":         250,
+        "vermogen_fase3_w":         200,
+        "actief_tarief":            1,
+        "totaal_verbruik_kwh":      6259.542,
+        "totaal_verbruik_piek_kwh": 2479.151,
+        "totaal_verbruik_dal_kwh":  3780.391,
+        "totaal_injectie_kwh":      7634.517,
+        "totaal_injectie_piek_kwh": 5242.947,
+        "totaal_injectie_dal_kwh":  2391.570,
+        "totaal_gas_m3":            2626.361,
+        "wifi_sterkte":             0,
+        "is_simulatie":             True,
+    }
 
 class HomeWizardMeter:
     """
     Klasse om data op te halen van de HomeWizard P1 slimme meter.
 
     De meter heeft twee API-eindpunten:
-    - /api          → basisinfo (model, versie, serienummer)
-    - /api/v1/data  → actuele meetwaarden (verbruik, teruglevering, ...)
+    - /API → basisinfo (model, versie, serienummer)
+    - /API/v1/data → actuele meetwaarden (verbruik, teruglevering, ...)
 
     Gebruik:
     --------
     meter = HomeWizardMeter()
     data = meter.get_data()
-    print(data["power_w"])   # huidig vermogen in Watt
+    print(data["power_w"]) # huidig vermogen in Watt
     """
 
     def __init__(self):
         """Sla het IP-adres op bij aanmaken van het object."""
 
-        # IP-adres komt uit Config — DRY principe
+        # IP-adres komt uit Config — DRY-principe
         self.ip = Config.HOMEWIZARD_IP
 
         # Basis-URL voor alle API-aanvragen
@@ -91,7 +113,7 @@ class HomeWizardMeter:
             return {}
 
     # --------------------------------------------------
-    #  Publieke methodes — bruikbaar van buitenaf
+    #  Publieke methodes  bruikbaar van buitenaf
     # --------------------------------------------------
 
     def get_info(self) -> dict:
@@ -111,7 +133,7 @@ class HomeWizardMeter:
             wifi_ssid           : naam van het wifi-netwerk
             wifi_strength_pct   : wifi signaalsterkte (%)
             smr_version         : versie van het DSMR-protocol
-            meter_model         : metertype
+            meter_model         : meter type
             power_w             : huidig verbruik in Watt (+ = verbruik, - = teruglevering)
             total_power_import_kwh  : totaal verbruik ooit (kWh)
             total_power_export_kwh  : totaal teruggeleverd ooit (kWh)
@@ -125,42 +147,61 @@ class HomeWizardMeter:
         """
         Geef een overzichtelijke samenvatting van de actuele meterstand.
 
-        Dit is een hulpmethode die de ruwe data omzet naar
-        een eenvoudig woordenboek met enkel de nuttige waarden.
+        Jouw meter (Fluvius 253967035_D) gebruikt deze veldnamen:
+            active_power_w          : huidig nettovermogen (+ verbruik, - injectie)
+            active_tariff           : actief tarief (1 = dag/piek, 2 = nacht/dal)
+            total_power_import_t1_kwh : totaal verbruik piekuren (tarief 1)
+            total_power_import_t2_kwh : totaal verbruik daluren (tarief 2)
+            total_power_export_t1_kwh : totaal injectie piekuren
+            total_power_export_t2_kwh : totaal injectie daluren
+            total_gas_m3            : totaal gasverbruik
+            active_voltage_l1_v     : spanning fase 1
+            active_current_a        : totale stroomsterkte
 
         Geeft terug:
-            dict met vermogen, totalen en tijdstip
+            dict met alle nuttige waarden netjes gegroepeerd
         """
         data = self.get_data()
 
-        # Als er geen data is (fout), geef simulatiedata terug
+        # Als er geen data is, geef simulatiedata terug
         if not data:
             print("[INFO] Geen live data — simulatiedata wordt gebruikt")
             return self._get_simulatie()
 
         return {
-            "tijdstip":             datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-            "huidig_vermogen_w":    data.get("power_w", 0),
-            "huidig_vermogen_kw":   round(data.get("power_w", 0) / 1000, 3),
-            "totaal_verbruik_kwh":  data.get("total_power_import_kwh", 0),
-            "totaal_injectie_kwh":  data.get("total_power_export_kwh", 0),
-            "wifi_sterkte":         data.get("wifi_strength_pct", 0),
-            "is_simulatie":         False,
+            # --- Tijdstip ---
+            "tijdstip": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+
+            # - - - Huidig vermogen - - -
+            # Positief = je verbruikt van het net
+            # Negatief = je injecteert naar het net (zonnepanelen)
+            "huidig_vermogen_w": data.get("active_power_w", 0),
+            "huidig_vermogen_kw": round(data.get("active_power_w", 0) / 1000, 3),
+
+            # --- Per fase (handig voor diagnose) ---
+            "vermogen_fase1_w": data.get("active_power_l1_w", 0),
+            "vermogen_fase2_w": data.get("active_power_l2_w", 0),
+            "vermogen_fase3_w": data.get("active_power_l3_w", 0),
+
+            # --- Actief tarief ---
+            # 1 = piekuren (dag), 2 = daluren (nacht/weekend)
+            "actief_tarief": data.get("active_tariff", 0),
+
+            # --- Totalen elektriciteit ---
+            "totaal_verbruik_kwh": data.get("total_power_import_kwh", 0),
+            "totaal_verbruik_piek_kwh": data.get("total_power_import_t1_kwh", 0),
+            "totaal_verbruik_dal_kwh": data.get("total_power_import_t2_kwh", 0),
+            "totaal_injectie_kwh": data.get("total_power_export_kwh", 0),
+            "totaal_injectie_piek_kwh": data.get("total_power_export_t1_kwh", 0),
+            "totaal_injectie_dal_kwh": data.get("total_power_export_t2_kwh", 0),
+
+            # --- Gas ---
+            "totaal_gas_m3": data.get("total_gas_m3", 0),
+
+            # --- Netwerk ---
+            "wifi_sterkte": data.get("wifi_strength", 0),
+
+            # --- Meta ---
+            "is_simulatie": False,
         }
 
-    def _get_simulatie(self) -> dict:
-        """
-        Geef nep-data terug als de meter niet bereikbaar is.
-
-        Handig om toch verder te kunnen werken en te testen
-        als je niet thuis bent of de meter tijdelijk offline is.
-        """
-        return {
-            "tijdstip":             datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-            "huidig_vermogen_w":    850,
-            "huidig_vermogen_kw":   0.850,
-            "totaal_verbruik_kwh":  12345.678,
-            "totaal_injectie_kwh":  4567.890,
-            "wifi_sterkte":         0,
-            "is_simulatie":         True,
-        }

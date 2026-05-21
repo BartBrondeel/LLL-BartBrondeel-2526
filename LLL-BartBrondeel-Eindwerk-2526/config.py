@@ -16,8 +16,6 @@ import os
 from dotenv import load_dotenv  # pip install python-dotenv
 
 # Laad de .env file in
-# .env bevat geheimen (API-sleutel, IP-adres) die NIET op GitHub mogen
-# .env staat in .gitignore — .env.example staat WEL op GitHub als voorbeeld
 load_dotenv()
 
 
@@ -29,7 +27,7 @@ class Config:
     ------------------
     OOP (Object Oriented Programming) principe:
     Alle instellingen zitten op 1 centrale plaats.
-    Als je bv. je IP-adres wil wijzigen, doe je dat
+    Als je bijvoorbeeld. Je IP-adres wil wijzigen, doe je dat
     hier en nergens anders in het project.
 
     DRY (Don't Repeat Yourself) principe:

@@ -3,7 +3,7 @@
   app.py — Energie Dashboard
   Student:   Bart Brondeel
   Opleiding: Graduaat Programmeren - Odisee
-  Versie:    0.3 — HomeWizardMeter klasse toegevoegd
+  Versie: 0.3 — HomeWizardMeter klasse toegevoegd
 
   Wijziging t.o.v. sessie 2:
   - Nieuwe route /meter toegevoegd
