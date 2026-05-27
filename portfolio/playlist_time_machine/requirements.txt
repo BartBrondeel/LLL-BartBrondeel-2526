@@ -1,0 +1,8 @@
+# =============================================================
+#  requirements.txt — Playlist Tijdmachine (Streamlit versie)
+#  Installeer met: pip install -r requirements.txt
+# =============================================================
+
+streamlit==1.35.0        # Webinterface
+requests==2.31.0         # Website ophalen
+beautifulsoup4==4.12.3   # HTML verwerken
