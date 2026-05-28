@@ -21,7 +21,7 @@ In ontwikkeling - wordt stap voor stap uitgebouwd
 | 1 | Project setup - Flask Hello World | ✅ Klaar |
 | 2 | Config klasse - OOP + python-dotenv | ✅ Klaar |
 | 3 | HomeWizardMeter klasse | ✅ Klaar |
-| 4 | PrijsBerekening klasse | 🔲 Gepland |
+| 4 | PrijsBerekening klasse | ✅ Gepland |
 | 5 | DataManager klasse | 🔲 Gepland |
 | 6 | EntsoEApi klasse | 🔲 Gepland |
 | 7 | Flask routes refactoren | 🔲 Gepland |
@@ -85,6 +85,7 @@ python app.py
 ```
 energie_dashboard/
 |-- app.py               <- Flask server en routes
+|-- calculator.py        <- PriceCalculator klasse (sessie 4)
 |-- config.py            <- Alle instellingen (OOP + DRY)
 |-- meter.py             <- HomeWizardMeter klasse (sessie 3)
 |-- requirements.txt     <- Benodigde bibliotheken
