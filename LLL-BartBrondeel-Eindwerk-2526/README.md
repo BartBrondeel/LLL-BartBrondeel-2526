@@ -22,7 +22,7 @@ In ontwikkeling - wordt stap voor stap uitgebouwd
 | 2 | Config klasse - OOP + python-dotenv | ✅ Klaar |
 | 3 | HomeWizardMeter klasse | ✅ Klaar |
 | 4 | PrijsBerekening klasse | ✅ Gepland |
-| 5 | DataManager klasse | 🔲 Gepland |
+| 5 | DataManager klasse | ✅ Gepland |
 | 6 | EntsoEApi klasse | 🔲 Gepland |
 | 7 | Flask routes refactoren | 🔲 Gepland |
 | 8 | Frontend dashboard | 🔲 Gepland |
@@ -84,9 +84,12 @@ python app.py
 
 ```
 energie_dashboard/
+|-- data/
+|   └── measurements.csv <- Opgeslagen metingen (niet op GitHub)
 |-- app.py               <- Flask server en routes
 |-- calculator.py        <- PriceCalculator klasse (sessie 4)
 |-- config.py            <- Alle instellingen (OOP + DRY)
+|-- data_manager.py      <- DataManager klasse (sessie 5)
 |-- meter.py             <- HomeWizardMeter klasse (sessie 3)
 |-- requirements.txt     <- Benodigde bibliotheken
 |-- .env                 <- Jouw geheimen (staat NIET op GitHub)
