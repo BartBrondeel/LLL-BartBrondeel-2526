@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:width="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>My Weather API</title>
+</head>
+<body>
+    <nav>
+        <a href="home.html">Home</a>
+        <a href="about.html">about</a>
+        <a href="contact.html">contact</a>
+    </nav>
+    <h1>My Weather API</h1>
+    <h2>Welcome</h2>
+    <p>What can you do on my site</p>
+    <p>URL format: http://127.0.0.1:5001/api/v1/stations/date</p>
+    <p>For one station for one date: http://127.0.0.1:5001/api/v1/10/1976-12-10</p>
+    <p>For one station for all dates: http://127.0.0.1:5001/api/v1/10</p>
+    <p>For one station for one year: http://127.0.0.1:5001/api/v1/yearly/10/1976</p>
+    <p>{{data|safe}}</p>
+    <img src="{{url_for('static', filename='ai.jpg')}}" style="width:500px" alt="AI">
+    <br>
+    <a href="https://www.dot11.be">Dot11</a>
+</body>
+</html>
