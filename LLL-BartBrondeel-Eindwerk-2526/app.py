@@ -21,6 +21,8 @@ from config import Config
 from meter import HomeWizardMeter
 from calculator import PriceCalculator
 from data_manager import DataManager
+from fluvius_importer import FluviusImporter
+from entsoe_api import EntsoEApi
 
 # =====================
 #  Flask app aanmaken
@@ -31,6 +33,8 @@ app = Flask(__name__)
 meter        = HomeWizardMeter()
 calculator   = PriceCalculator()
 data_manager = DataManager()
+fluvius      = FluviusImporter()
+entsoe = EntsoEApi()
 
 
 # =====================
@@ -75,6 +79,12 @@ def index():
             <li><a href="/history/today">Kostprijs vandaag (JSON)</a></li>
             <li><a href="/history/week">Kostprijs deze week (JSON)</a></li>
             <li><a href="/history/month">Kostprijs deze maand (JSON)</a></li>
+            <li><a href="/fluvius/preview">Fluvius bestand controleren</a></li>
+            <li><a href="/fluvius/import">Fluvius data importeren</a></li>
+            <li><a href="/energy/prices/today">Energieprijzen vandaag (JSON)</a></li>
+            <li><a href="/energy/prices/tomorrow">Energieprijzen morgen (JSON)</a></li>
+            <li><a href="/energy/prices/current">Actuele marktprijs (JSON)</a></li>
+            <li><a href="/energy/prices/week">Prijzen afgelopen week (JSON)</a></li>
         </ul>
         <p><em>Mooie pagina volgt in sessie 8.</em></p>
     """
@@ -145,6 +155,50 @@ def history_week():
 def history_month():
     """Geef de kostprijs en het verbruik van de laatste 30 dagen terug."""
     return jsonify(data_manager.get_month())
+
+
+@app.route("/fluvius/preview")
+def fluvius_preview():
+    """
+    Geef een samenvatting van het Fluvius bestand zonder te importeren.
+    Gebruik dit eerst om te controleren of het bestand correct is.
+    """
+    summary = fluvius.get_summary()
+    return jsonify(summary)
+
+
+@app.route("/fluvius/import")
+def fluvius_import():
+    """
+    Importeer de Fluvius historische data naar measurements.csv.
+    Bezoek deze URL eenmalig om de import te starten.
+    """
+    result = fluvius.import_data()
+    return jsonify(result)
+
+
+@app.route("/energy/prices/today")
+def energy_prices_today():
+    """Geef de DAY AHEAD energieprijzen van vandaag terug per uur."""
+    return jsonify(entsoe.get_prices_today())
+
+
+@app.route("/energy/prices/tomorrow")
+def energy_prices_tomorrow():
+    """Geef de DAY AHEAD energieprijzen van morgen terug per uur."""
+    return jsonify(entsoe.get_prices_tomorrow())
+
+
+@app.route("/energy/prices/current")
+def energy_price_current():
+    """Geef de actuele marktprijs terug voor dit uur."""
+    return jsonify(entsoe.get_current_price())
+
+
+@app.route("/energy/prices/week")
+def energy_prices_week():
+    """Geef de uurprijzen van de laatste 7 dagen terug."""
+    return jsonify(entsoe.get_prices_range(days_back=7))
 
 
 # =====================
