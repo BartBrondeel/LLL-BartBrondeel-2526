@@ -25,7 +25,7 @@ In ontwikkeling - wordt stap voor stap uitgebouwd
 | 5 | DataManager klasse | ✅ Klaar |
 | 6 | FluviusImporter klasse | ✅ Klaar |
 | 7 | EntsoEApi klasse | ✅ Klaar |
-| 8 | Frontend dashboard | 🔲 Gepland |
+| 8 | Frontend dashboard | ✅ Gepland |
 | 9 | Foutafhandeling en logging | 🔲 Gepland |
 | 10 | Eindtest en documentatie | 🔲 Gepland |
 

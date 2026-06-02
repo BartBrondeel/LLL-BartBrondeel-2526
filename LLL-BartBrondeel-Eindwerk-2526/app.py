@@ -13,7 +13,7 @@
 """
 
 # --- Externe bibliotheken ---
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 
 # --- Eigen modules ---
@@ -27,7 +27,10 @@ from entsoe_api import EntsoEApi
 # =====================
 #  Flask app aanmaken
 # =====================
-app = Flask(__name__)
+# Vertel Flask waar de templates en static bestanden staan
+app = Flask(__name__,
+            template_folder="templates",
+            static_folder="static")
 
 # Maak objecten aan — worden hergebruikt in alle routes (DRY)
 meter        = HomeWizardMeter()
@@ -64,30 +67,8 @@ print("[INFO] Automatisch opslaan gestart — elke minuut een meting")
 
 @app.route("/")
 def index():
-    """Startpagina — tijdelijke testpagina tot sessie 8."""
-    return """
-        <h1>Energie Dashboard</h1>
-        <p>Project is opgestart.</p>
-        <hr>
-        <h3>Beschikbare pagina's:</h3>
-        <ul>
-            <li><a href="/meter">Meterdata (JSON)</a></li>
-            <li><a href="/meter/info">Meterinformatie (JSON)</a></li>
-            <li><a href="/prices">Actuele kostprijs (JSON)</a></li>
-            <li><a href="/prices/daily?peak=5&off_peak=3">Dagkostprijs voorbeeld (JSON)</a></li>
-            <li><a href="/history">Recente metingen (JSON)</a></li>
-            <li><a href="/history/today">Kostprijs vandaag (JSON)</a></li>
-            <li><a href="/history/week">Kostprijs deze week (JSON)</a></li>
-            <li><a href="/history/month">Kostprijs deze maand (JSON)</a></li>
-            <li><a href="/fluvius/preview">Fluvius bestand controleren</a></li>
-            <li><a href="/fluvius/import">Fluvius data importeren</a></li>
-            <li><a href="/energy/prices/today">Energieprijzen vandaag (JSON)</a></li>
-            <li><a href="/energy/prices/tomorrow">Energieprijzen morgen (JSON)</a></li>
-            <li><a href="/energy/prices/current">Actuele marktprijs (JSON)</a></li>
-            <li><a href="/energy/prices/week">Prijzen afgelopen week (JSON)</a></li>
-        </ul>
-        <p><em>Mooie pagina volgt in sessie 8.</em></p>
-    """
+    """Toon het hoofddashboard."""
+    return render_template("index.html")
 
 
 @app.route("/meter")

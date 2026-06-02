@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energie Dashboard</title>
+
+    <!-- Chart.js voor grafieken -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Eigen stijl -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dark-theme">
+
+    <!-- ===================== NAVIGATIE ===================== -->
+    <header class="navbar">
+        <div class="navbar-brand">
+            <span class="brand-icon">⚡</span>
+            <span class="brand-text">Energie Dashboard</span>
+        </div>
+
+        <nav class="navbar-links">
+            <a href="#overzicht"  class="nav-link active">Overzicht</a>
+            <a href="#prijzen"    class="nav-link">Prijzen</a>
+            <a href="#historiek"  class="nav-link">Historiek</a>
+        </nav>
+
+        <!-- Dark/Light toggle schakelaar -->
+        <div class="theme-toggle">
+            <span class="theme-icon">🌙</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="themeToggle">
+                <span class="toggle-slider"></span>
+            </label>
+            <span class="theme-icon">☀️</span>
+        </div>
+    </header>
+
+    <!-- ===================== HOOFDINHOUD ===================== -->
+    <main class="main-content">
+
+        <!-- === SECTIE 1: LIVE OVERZICHT === -->
+        <section id="overzicht" class="section">
+            <h2 class="section-title">⚡ Live Overzicht</h2>
+
+            <div class="card-grid">
+
+                <!-- Huidig vermogen -->
+                <div class="card" id="card-power">
+                    <div class="card-icon">🔌</div>
+                    <div class="card-label">Huidig vermogen</div>
+                    <div class="card-value" id="current-power">--</div>
+                    <div class="card-unit">Watt</div>
+                    <div class="card-sub" id="power-status">Laden...</div>
+                </div>
+
+                <!-- Actief tarief -->
+                <div class="card" id="card-tariff">
+                    <div class="card-icon">🕐</div>
+                    <div class="card-label">Actief tarief</div>
+                    <div class="card-value" id="current-tariff">--</div>
+                    <div class="card-unit">tarief</div>
+                    <div class="card-sub" id="tariff-time">Laden...</div>
+                </div>
+
+                <!-- Actuele marktprijs -->
+                <div class="card" id="card-price">
+                    <div class="card-icon">💶</div>
+                    <div class="card-label">Marktprijs nu</div>
+                    <div class="card-value" id="current-market-price">--</div>
+                    <div class="card-unit">EUR/kWh</div>
+                    <div class="card-sub" id="price-time">Laden...</div>
+                </div>
+
+                <!-- Totaal verbruik -->
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <div class="card-label">Totaal verbruik</div>
+                    <div class="card-value" id="total-consumption">--</div>
+                    <div class="card-unit">kWh</div>
+                    <div class="card-sub">Sinds installatie</div>
+                </div>
+
+                <!-- Totaal injectie -->
+                <div class="card">
+                    <div class="card-icon">☀️</div>
+                    <div class="card-label">Totaal injectie</div>
+                    <div class="card-value" id="total-injection">--</div>
+                    <div class="card-unit">kWh</div>
+                    <div class="card-sub">Zonnepanelen</div>
+                </div>
+
+                <!-- Gas -->
+                <div class="card">
+                    <div class="card-icon">🔥</div>
+                    <div class="card-label">Gasverbruik</div>
+                    <div class="card-value" id="total-gas">--</div>
+                    <div class="card-unit">m³</div>
+                    <div class="card-sub">Totaal</div>
+                </div>
+
+            </div>
+
+            <!-- Tijdstip laatste update -->
+            <p class="last-update">Laatste update: <span id="last-update-time">--</span>
+               <span class="simulation-badge" id="simulation-badge" style="display:none">
+                 ⚠️ Simulatiemodus
+               </span>
+            </p>
+        </section>
+
+        <!-- === SECTIE 2: FASE VERDELING === -->
+        <section id="fases" class="section">
+            <h2 class="section-title">🔌 Vermogen per fase</h2>
+            <div class="card-grid-3">
+
+                <div class="card card-phase">
+                    <div class="card-label">Fase 1</div>
+                    <div class="card-value" id="phase1">--</div>
+                    <div class="card-unit">Watt</div>
+                </div>
+
+                <div class="card card-phase">
+                    <div class="card-label">Fase 2</div>
+                    <div class="card-value" id="phase2">--</div>
+                    <div class="card-unit">Watt</div>
+                </div>
+
+                <div class="card card-phase">
+                    <div class="card-label">Fase 3</div>
+                    <div class="card-value" id="phase3">--</div>
+                    <div class="card-unit">Watt</div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- === SECTIE 3: ENERGIEPRIJZEN === -->
+        <section id="prijzen" class="section">
+            <h2 class="section-title">💶 Energieprijzen vandaag</h2>
+
+            <!-- Statistieken -->
+            <div class="card-grid-3">
+                <div class="card">
+                    <div class="card-icon">⬇️</div>
+                    <div class="card-label">Laagste prijs</div>
+                    <div class="card-value" id="price-min">--</div>
+                    <div class="card-unit">EUR/kWh</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">➡️</div>
+                    <div class="card-label">Gemiddelde prijs</div>
+                    <div class="card-value" id="price-avg">--</div>
+                    <div class="card-unit">EUR/kWh</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⬆️</div>
+                    <div class="card-label">Hoogste prijs</div>
+                    <div class="card-value" id="price-max">--</div>
+                    <div class="card-unit">EUR/kWh</div>
+                </div>
+            </div>
+
+            <!-- Prijsgrafiek -->
+            <div class="chart-container">
+                <canvas id="priceChart"></canvas>
+            </div>
+        </section>
+
+        <!-- === SECTIE 4: HISTORIEK === -->
+        <section id="historiek" class="section">
+            <h2 class="section-title">📈 Verbruikshistoriek</h2>
+
+            <!-- Periode selector -->
+            <div class="period-selector">
+                <button class="period-btn active" data-period="today">Vandaag</button>
+                <button class="period-btn" data-period="week">Week</button>
+                <button class="period-btn" data-period="month">Maand</button>
+            </div>
+
+            <!-- Kostprijs kaarten -->
+            <div class="card-grid-3" id="cost-cards">
+                <div class="card">
+                    <div class="card-icon">📥</div>
+                    <div class="card-label">Verbruik piek</div>
+                    <div class="card-value" id="hist-peak-kwh">--</div>
+                    <div class="card-unit">kWh</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📥</div>
+                    <div class="card-label">Verbruik dal</div>
+                    <div class="card-value" id="hist-offpeak-kwh">--</div>
+                    <div class="card-unit">kWh</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💶</div>
+                    <div class="card-label">Netto kostprijs</div>
+                    <div class="card-value" id="hist-net-cost">--</div>
+                    <div class="card-unit">EUR</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer">
+        <p>Energie Dashboard — Bart Brondeel — Graduaat Programmeren Odisee 2025-2026</p>
+    </footer>
+
+    <!-- Eigen JavaScript -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+</body>
+</html>

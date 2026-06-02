@@ -1,0 +1,298 @@
+/* =============================================================
+   style.css — Energie Dashboard stijl
+   Bevat: dark theme, light theme, toggle, kaarten, grafieken
+   ============================================================= */
+
+/* --- CSS variabelen per thema --- */
+/* Dark theme (standaard) */
+body.dark-theme {
+    --bg-primary:     #0f172a;
+    --bg-secondary:   #1e293b;
+    --bg-card:        #1e293b;
+    --bg-navbar:      #0f172a;
+    --text-primary:   #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-accent:    #38bdf8;
+    --border-color:   #334155;
+    --card-shadow:    0 4px 6px rgba(0, 0, 0, 0.4);
+    --btn-active-bg:  #38bdf8;
+    --btn-active-txt: #0f172a;
+    --positive:       #4ade80;
+    --negative:       #f87171;
+    --chart-grid:     rgba(255,255,255,0.05);
+}
+
+/* Light theme */
+body.light-theme {
+    --bg-primary:     #f8fafc;
+    --bg-secondary:   #f1f5f9;
+    --bg-card:        #ffffff;
+    --bg-navbar:      #1e293b;
+    --text-primary:   #1e293b;
+    --text-secondary: #64748b;
+    --text-accent:    #0284c7;
+    --border-color:   #e2e8f0;
+    --card-shadow:    0 2px 8px rgba(0, 0, 0, 0.08);
+    --btn-active-bg:  #0284c7;
+    --btn-active-txt: #ffffff;
+    --positive:       #16a34a;
+    --negative:       #dc2626;
+    --chart-grid:     rgba(0,0,0,0.05);
+}
+
+/* --- Reset en basis --- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+}
+
+/* --- Navigatiebalk --- */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background-color: var(--bg-navbar);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.brand-icon { font-size: 1.5rem; }
+
+.brand-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #f1f5f9;   /* Altijd wit in navbar */
+}
+
+.navbar-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.95rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: #f1f5f9;
+    background: rgba(255,255,255,0.1);
+}
+
+/* --- Dark/Light toggle schakelaar --- */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.theme-icon { font-size: 1.1rem; }
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+}
+
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #475569;
+    border-radius: 26px;
+    transition: 0.3s;
+}
+
+.toggle-slider::before {
+    content: "";
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+input:checked + .toggle-slider { background-color: #38bdf8; }
+
+input:checked + .toggle-slider::before {
+    transform: translateX(22px);
+}
+
+/* --- Hoofdinhoud --- */
+.main-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* --- Secties --- */
+.section {
+    margin-bottom: 3rem;
+    scroll-margin-top: 80px;   /* Voor anchor navigatie */
+}
+
+.section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+/* --- Kaart grids --- */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.card-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Kaart --- */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+    box-shadow: var(--card-shadow);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.card:hover { transform: translateY(-2px); }
+
+.card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.card-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-accent);
+    margin-bottom: 0.25rem;
+}
+
+.card-unit {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.card-sub {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Kleur voor positief/negatief vermogen */
+.value-positive { color: var(--positive) !important; }
+.value-negative { color: var(--negative) !important; }
+
+/* --- Laatste update --- */
+.last-update {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+.simulation-badge {
+    background: #f59e0b;
+    color: #1e293b;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+}
+
+/* --- Grafiek container --- */
+.chart-container {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    height: 320px;
+}
+
+/* --- Periode selector knoppen --- */
+.period-selector {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.period-btn {
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.period-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--text-accent);
+}
+
+.period-btn.active {
+    background: var(--btn-active-bg);
+    color: var(--btn-active-txt);
+    border-color: var(--btn-active-bg);
+    font-weight: 600;
+}
+
+/* --- Footer --- */
+.footer {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: 2rem;
+}

@@ -130,21 +130,18 @@ class DataManager:
     def _filter_by_period(self, days: int) -> pd.DataFrame:
         """
         Geef metingen terug van de laatste X dagen.
-
-        Parameters:
-            days : aantal dagen terug (1 = vandaag, 7 = week, 30 = maand)
-
-        Geeft terug:
-            DataFrame met gefilterde metingen
+        Sorteert op tijdstip zodat eerste/laatste correct zijn.
         """
-        df    = self._load_all()
+        df = self._load_all()
 
         if df.empty:
             return df
 
-        # Bereken de grens: van X dagen geleden tot nu
         cutoff = datetime.now() - timedelta(days=days)
-        return df[df["timestamp"] >= cutoff]
+        filtered = df[df["timestamp"] >= cutoff]
+
+        # Sorteer op tijdstip — oudste eerst
+        return filtered.sort_values("timestamp").reset_index(drop=True)
 
     def _calculate_period_costs(self, df: pd.DataFrame) -> dict:
         """
@@ -241,9 +238,75 @@ class DataManager:
             return False
 
     def get_today(self) -> dict:
-        """Geef de metingen en kostprijs van vandaag terug."""
-        df = self._filter_by_period(days=1)
-        return self._calculate_period_costs(df)
+        """
+        Bereken het verbruik van vandaag.
+
+        Gebruikt de laatste meting van gisteren als beginstand
+        en vergelijkt die met de huidige live meterstand.
+
+        Geeft terug:
+            dict met verbruik en kostprijs van vandaag
+        """
+        df = self._load_all()
+
+        if df.empty:
+            return {"error": "Geen metingen beschikbaar"}
+
+        # Begin van vandaag = middernacht
+        today_start = datetime.now().replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+
+        # Laatste meting van gisteren = beginstand van vandaag
+        yesterday_df = df[df["timestamp"] < today_start].sort_values("timestamp")
+
+        if yesterday_df.empty:
+            return {"error": "Geen beginstand beschikbaar"}
+
+        # Neem de laatste meting van gisteren als beginstand
+        baseline = yesterday_df.iloc[-1]
+
+        # Huidige live meterstand ophalen
+        live_data = self.meter.get_summary()
+
+        # Verbruik vandaag = live stand - beginstand gisteren
+        peak_kwh = round(live_data.get("total_consumption_peak_kwh", 0)
+                         - baseline["total_consumption_peak_kwh"], 3)
+        off_peak_kwh = round(live_data.get("total_consumption_off_peak_kwh", 0)
+                             - baseline["total_consumption_off_peak_kwh"], 3)
+        inj_peak = round(live_data.get("total_injection_peak_kwh", 0)
+                         - baseline["total_injection_peak_kwh"], 3)
+        inj_off_peak = round(live_data.get("total_injection_off_peak_kwh", 0)
+                             - baseline["total_injection_off_peak_kwh"], 3)
+        gas_m3 = round(live_data.get("total_gas_m3", 0)
+                       - baseline["total_gas_m3"], 3)
+
+        # Negatieve waarden vermijden bij afrondingsverschillen
+        peak_kwh = max(0, peak_kwh)
+        off_peak_kwh = max(0, off_peak_kwh)
+        inj_peak = max(0, inj_peak)
+        inj_off_peak = max(0, inj_off_peak)
+        gas_m3 = max(0, gas_m3)
+
+        # Bereken kostprijs
+        costs = self.calculator.calculate_daily_cost(
+            peak_kwh=peak_kwh,
+            off_peak_kwh=off_peak_kwh,
+            peak_injection_kwh=inj_peak,
+            off_peak_injection_kwh=inj_off_peak,
+        )
+
+        return {
+            "period_start": baseline["timestamp"].strftime("%d/%m/%Y %H:%M"),
+            "period_end": datetime.now().strftime("%d/%m/%Y %H:%M"),
+            "baseline_date": baseline["timestamp"].strftime("%d/%m/%Y %H:%M"),
+            "consumption_peak_kwh": peak_kwh,
+            "consumption_off_peak_kwh": off_peak_kwh,
+            "injection_peak_kwh": inj_peak,
+            "injection_off_peak_kwh": inj_off_peak,
+            "gas_m3": gas_m3,
+            "costs": costs,
+        }
 
     def get_week(self) -> dict:
         """Geef de metingen en kostprijs van de laatste 7 dagen terug."""
