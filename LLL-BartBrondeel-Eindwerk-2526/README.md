@@ -88,21 +88,28 @@ python app.py
 
 ```
 energie_dashboard/
+|-- app.py                        <- Flask server en routes
+|-- config.py                     <- Alle instellingen (OOP + DRY)
+|-- meter.py                      <- HomeWizardMeter klasse (sessie 3)
+|-- calculator.py                 <- PriceCalculator klasse (sessie 4)
+|-- data_manager.py               <- DataManager klasse (sessie 5)
+|-- fluvius_importer.py           <- FluviusImporter klasse (sessie 6)
+|-- entsoe_api.py                 <- EntsoEApi klasse (sessie 7)
+|-- requirements.txt              <- Benodigde bibliotheken
+|-- .env                          <- Jouw geheimen (staat NIET op GitHub)
+|-- .env.example                  <- Voorbeeld configuratie (geen echte waarden)
+|-- .gitignore                    <- Bestanden die niet naar GitHub gaan
+|-- README.md                     <- Deze documentatie
+|-- templates/
+|   └-- index.html                <- Dashboard HTML template (sessie 8)
+|-- static/
+|   |-- css/
+|   |   └-- style.css             <- Dark/light thema stijl (sessie 8)
+|   └-- js/
+|       └-- dashboard.js          <- Dashboard JavaScript (sessie 8)
 |-- data/
-|   |-- measurements.csv              <- Live metingen + geïmporteerde Fluvius data
-|   └-- historiek_elektriciteit.csv   <- Fluvius historisch export (staat NIET op GitHub)
-|-- app.py               <- Flask server en routes
-|-- calculator.py        <- PriceCalculator klasse (sessie 4)
-|-- config.py            <- Alle instellingen (OOP + DRY)
-|-- data_manager.py      <- DataManager klasse (sessie 5)
-|-- entsoe_api.py         <- EntsoEApi klasse (sessie 7)
-|-- fluvius_importer.py   <- FluviusImporter klasse (sessie 6)
-|-- meter.py             <- HomeWizardMeter klasse (sessie 3)
-|-- requirements.txt     <- Benodigde bibliotheken
-|-- .env                 <- Jouw geheimen (staat NIET op GitHub)
-|-- .env.example         <- Voorbeeld configuratie (geen echte waarden)
-|-- .gitignore           <- Bestanden die niet naar GitHub gaan
-|-- README.md            <- Deze documentatie
+|   |-- measurements.csv          <- Live metingen (staat NIET op GitHub)
+|   └-- historiek_elektriciteit.csv <- Fluvius export (staat NIET op GitHub)
 ```
 
 ## Auteur
