@@ -167,16 +167,26 @@
                 <canvas id="priceChart"></canvas>
             </div>
         </section>
+                <!-- === SECTIE: PRIJZEN MORGEN === -->
+        <section id="prijzen-morgen" class="section">
+            <h2 class="section-title">🔮 Energieprijzen komende 24u</h2>
+
+            <div class="chart-container">
+                <canvas id="tomorrowPriceChart"></canvas>
+            </div>
+            <p class="last-update" id="tomorrow-message"></p>
+        </section>
 
         <!-- === SECTIE 4: HISTORIEK === -->
         <section id="historiek" class="section">
             <h2 class="section-title">📈 Verbruikshistoriek</h2>
 
-            <!-- Periode selector -->
+                        <!-- Periode selector -->
             <div class="period-selector">
                 <button class="period-btn active" data-period="today">Vandaag</button>
                 <button class="period-btn" data-period="week">Week</button>
                 <button class="period-btn" data-period="month">Maand</button>
+                <button class="period-btn" data-period="year">Jaar</button>
             </div>
 
             <!-- Kostprijs kaarten -->
@@ -194,10 +204,29 @@
                     <div class="card-unit">kWh</div>
                 </div>
                 <div class="card">
+                    <div class="card-icon">☀️</div>
+                    <div class="card-label">Injectie totaal</div>
+                    <div class="card-value" id="hist-injection-kwh">--</div>
+                    <div class="card-unit">kWh</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔥</div>
+                    <div class="card-label">Gasverbruik</div>
+                    <div class="card-value" id="hist-gas">--</div>
+                    <div class="card-unit">m³</div>
+                </div>
+                <div class="card">
                     <div class="card-icon">💶</div>
                     <div class="card-label">Netto kostprijs</div>
                     <div class="card-value" id="hist-net-cost">--</div>
                     <div class="card-unit">EUR</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📅</div>
+                    <div class="card-label">Periode</div>
+                    <div class="card-value" id="hist-period-start"
+                         style="font-size:0.9rem">--</div>
+                    <div class="card-unit" id="hist-period-end">--</div>
                 </div>
             </div>
         </section>

@@ -212,6 +212,87 @@ function buildPriceChart(prices) {
     });
 }
 
+async function loadTomorrowPrices() {
+    try {
+        const response = await fetch("/energy/prices/tomorrow");
+        const data     = await response.json();
+
+        const msgEl = document.getElementById("tomorrow-message");
+
+        // Prijzen nog niet beschikbaar voor 13:00
+        if (!data.prices || data.prices.length === 0) {
+            msgEl.textContent = data.message ||
+                "Prijzen voor morgen beschikbaar vanaf 13:00";
+            return;
+        }
+
+        msgEl.textContent = `Prijzen voor ${data.date}`;
+        buildTomorrowChart(data.prices);
+
+    } catch (error) {
+        console.error("Fout bij laden prijzen morgen:", error);
+    }
+}
+
+function buildTomorrowChart(prices) {
+    const ctx = document.getElementById("tomorrowPriceChart").getContext("2d");
+
+    const labels  = prices.map(p => p.timestamp.split(" ")[1]);
+    const values  = prices.map(p => p.price_eur_kwh);
+
+    const isDark    = body.classList.contains("dark-theme");
+    const gridColor = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)";
+    const textColor = isDark ? "#94a3b8" : "#64748b";
+    const lineColor = isDark ? "#a78bfa" : "#7c3aed";  // Paars voor morgen
+    const fillColor = isDark ? "rgba(167,139,250,0.15)" : "rgba(124,58,237,0.1)";
+
+    if (window.tomorrowChart) {
+        window.tomorrowChart.destroy();
+    }
+
+    window.tomorrowChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label          : "Prijs morgen (EUR/kWh)",
+                data           : values,
+                borderColor    : lineColor,
+                backgroundColor: fillColor,
+                borderWidth    : 2,
+                fill           : true,
+                tension        : 0.3,
+                pointRadius    : 2,
+            }]
+        },
+        options: {
+            responsive         : true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: textColor } },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => ` €${ctx.parsed.y.toFixed(4)}/kWh`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: textColor, maxTicksLimit: 12 },
+                    grid : { color: gridColor }
+                },
+                y: {
+                    ticks: {
+                        color   : textColor,
+                        callback: (val) => `€${val.toFixed(3)}`
+                    },
+                    grid: { color: gridColor }
+                }
+            }
+        }
+    });
+}
+
 function updateChartTheme() {
     // Herlaad de prijzen zodat de grafiek opnieuw wordt gebouwd met het nieuwe thema
     loadPrices();
@@ -230,9 +311,10 @@ async function loadHistory(period = "today") {
 
     // Juiste API route kiezen op basis van periode
     const routes = {
-        today: "/history/today",
-        week : "/history/week",
-        month: "/history/month"
+        today : "/history/today",
+        week  : "/history/week",
+        month : "/history/month",
+        year  : "/history/year",
     };
 
     try {
@@ -241,18 +323,43 @@ async function loadHistory(period = "today") {
 
         if (data.error) {
             // Nog niet genoeg metingen
-            document.getElementById("hist-peak-kwh").textContent   = "--";
-            document.getElementById("hist-offpeak-kwh").textContent = "--";
-            document.getElementById("hist-net-cost").textContent    = "--";
+            ["hist-peak-kwh", "hist-offpeak-kwh", "hist-injection-kwh",
+             "hist-gas", "hist-net-cost"].forEach(id => {
+                document.getElementById(id).textContent = "--";
+            });
+            document.getElementById("hist-period-start").textContent = data.error;
             return;
         }
 
+        // Verbruik
         document.getElementById("hist-peak-kwh").textContent =
             data.consumption_peak_kwh.toFixed(3);
         document.getElementById("hist-offpeak-kwh").textContent =
             data.consumption_off_peak_kwh.toFixed(3);
-        document.getElementById("hist-net-cost").textContent =
-            "€" + data.costs.net_cost_eur.toFixed(2);
+
+        // Injectie totaal
+        const totalInjection = (
+            (data.injection_peak_kwh || 0) +
+            (data.injection_off_peak_kwh || 0)
+        ).toFixed(3);
+        document.getElementById("hist-injection-kwh").textContent = totalInjection;
+
+        // Gas
+        document.getElementById("hist-gas").textContent =
+            (data.gas_m3 || 0).toFixed(3);
+
+        // Netto kostprijs — groen als negatief (je hebt verdiend!)
+        const netCost = data.costs.net_cost_eur;
+        const costEl  = document.getElementById("hist-net-cost");
+        costEl.textContent = "€" + netCost.toFixed(2);
+        costEl.className   = "card-value " +
+            (netCost <= 0 ? "value-positive" : "value-negative");
+
+        // Periode
+        document.getElementById("hist-period-start").textContent =
+            data.period_start || "--";
+        document.getElementById("hist-period-end").textContent =
+            "tot " + (data.period_end || "--");
 
     } catch (error) {
         console.error("Fout bij laden historiek:", error);
@@ -280,9 +387,14 @@ document.querySelectorAll(".period-btn").forEach(btn => {
 // =====================================================
 
 // Laad alles bij het opstarten van de pagina
+// Laad alles bij het opstarten
 loadMeterData();
 loadPrices();
+loadTomorrowPrices();     // ← nieuw
 loadHistory("today");
+
+// Ververs prijzen morgen elk uur
+setInterval(loadTomorrowPrices, 3600000);
 
 // Ververs meterdata elke 30 seconden
 setInterval(loadMeterData, 30000);

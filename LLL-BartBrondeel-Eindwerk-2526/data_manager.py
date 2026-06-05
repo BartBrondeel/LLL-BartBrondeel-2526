@@ -318,6 +318,74 @@ class DataManager:
         df = self._filter_by_period(days=30)
         return self._calculate_period_costs(df)
 
+    def get_year(self) -> dict:
+        """
+        Bereken het verbruik van het afgelopen jaar.
+
+        Gebruikt de laatste meting van 365 dagen geleden als beginstand
+        en vergelijkt die met de huidige live meterstand.
+
+        Geeft terug:
+            dict met verbruik en kostprijs van het afgelopen jaar
+        """
+        df = self._load_all()
+
+        if df.empty:
+            return {"error": "Geen metingen beschikbaar"}
+
+        # Begin van het jaar = 365 dagen geleden
+        year_start = datetime.now() - timedelta(days=365)
+
+        # Laatste meting voor het beginpunt
+        before_df = df[df["timestamp"] < year_start].sort_values("timestamp")
+
+        if before_df.empty:
+            # Geen meting van voor een jaar geleden — gebruik oudste meting
+            before_df = df.sort_values("timestamp")
+
+        baseline = before_df.iloc[-1]
+
+        # Huidige live meterstand
+        live_data = self.meter.get_summary()
+
+        # Verbruik = live stand - beginstand
+        peak_kwh = round(live_data.get("total_consumption_peak_kwh", 0)
+                         - baseline["total_consumption_peak_kwh"], 3)
+        off_peak_kwh = round(live_data.get("total_consumption_off_peak_kwh", 0)
+                             - baseline["total_consumption_off_peak_kwh"], 3)
+        inj_peak = round(live_data.get("total_injection_peak_kwh", 0)
+                         - baseline["total_injection_peak_kwh"], 3)
+        inj_off_peak = round(live_data.get("total_injection_off_peak_kwh", 0)
+                             - baseline["total_injection_off_peak_kwh"], 3)
+        gas_m3 = round(live_data.get("total_gas_m3", 0)
+                       - baseline["total_gas_m3"], 3)
+
+        # Negatieve waarden vermijden
+        peak_kwh = max(0, peak_kwh)
+        off_peak_kwh = max(0, off_peak_kwh)
+        inj_peak = max(0, inj_peak)
+        inj_off_peak = max(0, inj_off_peak)
+        gas_m3 = max(0, gas_m3)
+
+        # Kostprijs berekenen
+        costs = self.calculator.calculate_daily_cost(
+            peak_kwh=peak_kwh,
+            off_peak_kwh=off_peak_kwh,
+            peak_injection_kwh=inj_peak,
+            off_peak_injection_kwh=inj_off_peak,
+        )
+
+        return {
+            "period_start": baseline["timestamp"].strftime("%d/%m/%Y %H:%M"),
+            "period_end": datetime.now().strftime("%d/%m/%Y %H:%M"),
+            "consumption_peak_kwh": peak_kwh,
+            "consumption_off_peak_kwh": off_peak_kwh,
+            "injection_peak_kwh": inj_peak,
+            "injection_off_peak_kwh": inj_off_peak,
+            "gas_m3": gas_m3,
+            "costs": costs,
+        }
+
     def get_recent_measurements(self, limit: int = 10) -> list:
         """
         Geef de meest recente metingen terug als lijst.

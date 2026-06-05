@@ -23,6 +23,22 @@ from calculator import PriceCalculator
 from data_manager import DataManager
 from fluvius_importer import FluviusImporter
 from entsoe_api import EntsoEApi
+import logging
+
+# Logging instellen — schrijft naar bestand én terminal
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        # Schrijf naar bestand
+        logging.FileHandler("data/dashboard.log", encoding="utf-8"),
+        # Schrijf ook naar terminal
+        logging.StreamHandler()
+    ]
+)
+
+# Logger aanmaken voor de app
+logger = logging.getLogger(__name__)
 
 # =====================
 #  Flask app aanmaken
@@ -58,7 +74,19 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(save_measurement_job, "interval", minutes=1)
 scheduler.start()
 
-print("[INFO] Automatisch opslaan gestart — elke minuut een meting")
+logger.info("Automatisch opslaan gestart — elke minuut een meting")
+
+@app.errorhandler(404)
+def not_found(error):
+    """Toon een nette foutmelding bij een onbekende pagina."""
+    return jsonify({"error": "Pagina niet gevonden", "code": 404}), 404
+
+
+@app.errorhandler(500)
+def server_error(error):
+    """Toon een nette foutmelding bij een serverfout."""
+    logger.error(f"Serverfout: {error}")
+    return jsonify({"error": "Interne serverfout", "code": 500}), 500
 
 
 # =====================
@@ -136,6 +164,12 @@ def history_week():
 def history_month():
     """Geef de kostprijs en het verbruik van de laatste 30 dagen terug."""
     return jsonify(data_manager.get_month())
+
+
+@app.route("/history/year")
+def history_year():
+    """Geef de kostprijs en het verbruik van het afgelopen jaar terug."""
+    return jsonify(data_manager.get_year())
 
 
 @app.route("/fluvius/preview")
