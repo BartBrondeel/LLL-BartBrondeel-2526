@@ -12,18 +12,26 @@
   CSV = Comma Separated Values — gewoon een tekstbestand
   dat je ook in Excel kan openen.
 
+  Twee soorten data in het CSV-bestand:
+  1. Fluvius historische data (gas = 0, eigen cumulatieve teller)
+  2. Live meterdata (gas > 0, echte metertotalen)
+
+  Belangrijk: beide datasets gebruiken een ANDERE referentie
+  voor de cumulatieve totalen. Ze worden daarom nooit gemengd
+  in berekeningen — elke periode gebruikt één consistente bron.
+
   Kolommen in het CSV-bestand:
-    timestamp                   : tijdstip van de meting
-    current_power_w             : huidig vermogen in Watt
-    active_tariff               : actief tarief (1=piek, 2=dal)
-    total_consumption_kwh       : totaal verbruik ooit
-    total_consumption_peak_kwh  : totaal verbruik piekuren
+    timestamp                     : tijdstip van de meting
+    current_power_w               : huidig vermogen in Watt
+    active_tariff                 : actief tarief (1=piek, 2=dal)
+    total_consumption_kwh         : totaal verbruik ooit
+    total_consumption_peak_kwh    : totaal verbruik piekuren
     total_consumption_off_peak_kwh: totaal verbruik daluren
-    total_injection_kwh         : totaal injectie ooit
-    total_injection_peak_kwh    : totaal injectie piekuren
-    total_injection_off_peak_kwh: totaal injectie daluren
-    total_gas_m3                : totaal gasverbruik
-    is_simulation               : True als het nep-data is
+    total_injection_kwh           : totaal injectie ooit
+    total_injection_peak_kwh      : totaal injectie piekuren
+    total_injection_off_peak_kwh  : totaal injectie daluren
+    total_gas_m3                  : totaal gasverbruik
+    is_simulation                 : True als het nep-data is
 =============================================================
 """
 
@@ -119,29 +127,70 @@ class DataManager:
 
             # Zet de timestamp kolom om naar een echt datum-object
             # Zo kan pandas filteren op dag, week, maand
-            df["timestamp"] = pd.to_datetime(df["timestamp"],
-                                             format="%d/%m/%Y %H:%M:%S")
+            df["timestamp"] = pd.to_datetime(
+                df["timestamp"],
+                format="%d/%m/%Y %H:%M:%S"
+            )
             return df
 
         except pd.errors.EmptyDataError:
             # Bestand is leeg — geef een lege DataFrame terug
             return pd.DataFrame(columns=self.COLUMNS)
 
-    def _filter_by_period(self, days: int) -> pd.DataFrame:
+    def _load_fluvius_only(self) -> pd.DataFrame:
         """
-        Geef metingen terug van de laatste X dagen.
-        Sorteert op tijdstip zodat eerste/laatste correct zijn.
+        Laad enkel de Fluvius historische metingen.
+
+        Fluvius data herken je aan:
+          - is_simulation = False
+          - total_gas_m3  = 0 (gas zit niet in de elektriciteits-export)
+
+        Deze data heeft een eigen cumulatieve teller vanaf 01/01/2025.
+        NOOIT mengen met live meterdata voor berekeningen!
+
+        Geeft terug:
+            DataFrame met enkel Fluvius metingen, gesorteerd op tijdstip
         """
         df = self._load_all()
 
         if df.empty:
             return df
 
-        cutoff = datetime.now() - timedelta(days=days)
-        filtered = df[df["timestamp"] >= cutoff]
+        # Zet is_simulation om naar boolean voor correcte vergelijking
+        df["is_simulation"] = df["is_simulation"].astype(str).str.lower() == "true"
 
-        # Sorteer op tijdstip — oudste eerst
-        return filtered.sort_values("timestamp").reset_index(drop=True)
+        return df[
+            (df["is_simulation"] == False) &
+            (df["total_gas_m3"]   == 0)
+        ].sort_values("timestamp").reset_index(drop=True)
+
+    def _load_live_only(self) -> pd.DataFrame:
+        """
+        Laad enkel de live metingen van de echte meter.
+
+        Live data herken je aan:
+          - is_simulation = False
+          - total_gas_m3  > 0 (echte meter levert gasdata)
+
+        Deze data heeft de echte metertotalen (cumulatief
+        vanaf de installatie van de meter — jaren geleden).
+        NOOIT mengen met Fluvius data voor berekeningen!
+
+        Geeft terug:
+            DataFrame met enkel live metingen, gesorteerd op tijdstip
+        """
+        df = self._load_all()
+
+        if df.empty:
+            return df
+
+        # Zet is_simulation om naar boolean voor correcte vergelijking
+        df["is_simulation"] = df["is_simulation"].astype(str).str.lower() == "true"
+
+        return df[
+            (df["is_simulation"] == False) &
+            (df["total_gas_m3"]   >  0)
+        ].sort_values("timestamp").reset_index(drop=True)
 
     def _calculate_period_costs(self, df: pd.DataFrame) -> dict:
         """
@@ -150,8 +199,12 @@ class DataManager:
         Gebruikt het verschil tussen de eerste en laatste meting
         om het verbruik in de periode te berekenen.
 
+        Beide metingen MOETEN uit dezelfde dataset komen
+        (beide Fluvius OF beide live) anders zijn de totalen
+        niet vergelijkbaar en geeft de berekening een fout resultaat.
+
         Parameters:
-            df : DataFrame met metingen uit een bepaalde periode
+            df : DataFrame met metingen uit één consistente dataset
 
         Geeft terug:
             dict met verbruik en kostprijzen voor de periode
@@ -165,11 +218,16 @@ class DataManager:
         last  = df.iloc[-1]
 
         # Verbruik = verschil tussen laatste en eerste meting
-        peak_kwh     = round(last["total_consumption_peak_kwh"]     - first["total_consumption_peak_kwh"],     3)
-        off_peak_kwh = round(last["total_consumption_off_peak_kwh"] - first["total_consumption_off_peak_kwh"], 3)
-        inj_peak_kwh = round(last["total_injection_peak_kwh"]       - first["total_injection_peak_kwh"],       3)
-        inj_off_peak = round(last["total_injection_off_peak_kwh"]   - first["total_injection_off_peak_kwh"],   3)
-        gas_m3       = round(last["total_gas_m3"]                   - first["total_gas_m3"],                   3)
+        peak_kwh     = max(0, round(last["total_consumption_peak_kwh"]
+                                    - first["total_consumption_peak_kwh"],     3))
+        off_peak_kwh = max(0, round(last["total_consumption_off_peak_kwh"]
+                                    - first["total_consumption_off_peak_kwh"], 3))
+        inj_peak_kwh = max(0, round(last["total_injection_peak_kwh"]
+                                    - first["total_injection_peak_kwh"],       3))
+        inj_off_peak = max(0, round(last["total_injection_off_peak_kwh"]
+                                    - first["total_injection_off_peak_kwh"],   3))
+        gas_m3       = max(0, round(last["total_gas_m3"]
+                                    - first["total_gas_m3"],                   3))
 
         # Bereken de kostprijs via de PriceCalculator
         costs = self.calculator.calculate_daily_cost(
@@ -180,15 +238,15 @@ class DataManager:
         )
 
         return {
-            "period_start"          : first["timestamp"].strftime("%d/%m/%Y %H:%M"),
-            "period_end"            : last["timestamp"].strftime("%d/%m/%Y %H:%M"),
-            "number_of_measurements": len(df),
-            "consumption_peak_kwh"  : peak_kwh,
-            "consumption_off_peak_kwh": off_peak_kwh,
-            "injection_peak_kwh"    : inj_peak_kwh,
-            "injection_off_peak_kwh": inj_off_peak,
-            "gas_m3"                : gas_m3,
-            "costs"                 : costs,
+            "period_start"              : first["timestamp"].strftime("%d/%m/%Y %H:%M"),
+            "period_end"                : last["timestamp"].strftime("%d/%m/%Y %H:%M"),
+            "number_of_measurements"    : len(df),
+            "consumption_peak_kwh"      : peak_kwh,
+            "consumption_off_peak_kwh"  : off_peak_kwh,
+            "injection_peak_kwh"        : inj_peak_kwh,
+            "injection_off_peak_kwh"    : inj_off_peak,
+            "gas_m3"                    : gas_m3,
+            "costs"                     : costs,
         }
 
     # --------------------------------------------------
@@ -205,8 +263,7 @@ class DataManager:
         # Haal actuele data op van de meter
         data = self.meter.get_summary()
 
-        # Sla simulatiedata ook op — handig voor testen
-        # Maak een nieuwe rij aan met enkel de kolommen die we willen bewaren
+        # Maak een nieuwe rij aan met enkel de kolommen die we bewaren
         new_row = {
             "timestamp"                     : data.get("timestamp"),
             "current_power_w"               : data.get("current_power_w"),
@@ -244,6 +301,9 @@ class DataManager:
         Gebruikt de laatste meting van gisteren als beginstand
         en vergelijkt die met de huidige live meterstand.
 
+        Vandaag gebruikt LIVE data — die heeft de echte gas- en
+        elektriciteitstotalen van de meter.
+
         Geeft terug:
             dict met verbruik en kostprijs van vandaag
         """
@@ -270,23 +330,16 @@ class DataManager:
         live_data = self.meter.get_summary()
 
         # Verbruik vandaag = live stand - beginstand gisteren
-        peak_kwh = round(live_data.get("total_consumption_peak_kwh", 0)
-                         - baseline["total_consumption_peak_kwh"], 3)
-        off_peak_kwh = round(live_data.get("total_consumption_off_peak_kwh", 0)
-                             - baseline["total_consumption_off_peak_kwh"], 3)
-        inj_peak = round(live_data.get("total_injection_peak_kwh", 0)
-                         - baseline["total_injection_peak_kwh"], 3)
-        inj_off_peak = round(live_data.get("total_injection_off_peak_kwh", 0)
-                             - baseline["total_injection_off_peak_kwh"], 3)
-        gas_m3 = round(live_data.get("total_gas_m3", 0)
-                       - baseline["total_gas_m3"], 3)
-
-        # Negatieve waarden vermijden bij afrondingsverschillen
-        peak_kwh = max(0, peak_kwh)
-        off_peak_kwh = max(0, off_peak_kwh)
-        inj_peak = max(0, inj_peak)
-        inj_off_peak = max(0, inj_off_peak)
-        gas_m3 = max(0, gas_m3)
+        peak_kwh     = max(0, round(live_data.get("total_consumption_peak_kwh", 0)
+                                    - baseline["total_consumption_peak_kwh"],     3))
+        off_peak_kwh = max(0, round(live_data.get("total_consumption_off_peak_kwh", 0)
+                                    - baseline["total_consumption_off_peak_kwh"], 3))
+        inj_peak     = max(0, round(live_data.get("total_injection_peak_kwh", 0)
+                                    - baseline["total_injection_peak_kwh"],       3))
+        inj_off_peak = max(0, round(live_data.get("total_injection_off_peak_kwh", 0)
+                                    - baseline["total_injection_off_peak_kwh"],   3))
+        gas_m3       = max(0, round(live_data.get("total_gas_m3", 0)
+                                    - baseline["total_gas_m3"],                   3))
 
         # Bereken kostprijs
         costs = self.calculator.calculate_daily_cost(
@@ -297,77 +350,57 @@ class DataManager:
         )
 
         return {
-            "period_start": baseline["timestamp"].strftime("%d/%m/%Y %H:%M"),
-            "period_end": datetime.now().strftime("%d/%m/%Y %H:%M"),
-            "baseline_date": baseline["timestamp"].strftime("%d/%m/%Y %H:%M"),
-            "consumption_peak_kwh": peak_kwh,
-            "consumption_off_peak_kwh": off_peak_kwh,
-            "injection_peak_kwh": inj_peak,
-            "injection_off_peak_kwh": inj_off_peak,
-            "gas_m3": gas_m3,
-            "costs": costs,
+            "period_start"              : baseline["timestamp"].strftime("%d/%m/%Y %H:%M"),
+            "period_end"                : datetime.now().strftime("%d/%m/%Y %H:%M"),
+            "consumption_peak_kwh"      : peak_kwh,
+            "consumption_off_peak_kwh"  : off_peak_kwh,
+            "injection_peak_kwh"        : inj_peak,
+            "injection_off_peak_kwh"    : inj_off_peak,
+            "gas_m3"                    : gas_m3,
+            "costs"                     : costs,
         }
 
     def get_week(self) -> dict:
-        """Geef de metingen en kostprijs van de laatste 7 dagen terug."""
-        df = self._filter_by_period(days=7)
-        return self._calculate_period_costs(df)
-
-    def get_month(self) -> dict:
-        """Geef de metingen en kostprijs van de laatste 30 dagen terug."""
-        df = self._filter_by_period(days=30)
-        return self._calculate_period_costs(df)
-
-    def get_year(self) -> dict:
         """
-        Bereken het verbruik van het afgelopen jaar.
+        Geef verbruik en kostprijs van de laatste 7 dagen terug.
 
-        Gebruikt de laatste meting van 365 dagen geleden als beginstand
-        en vergelijkt die met de huidige live meterstand.
+        Gebruikt live meterdata met baseline aanpak —
+        zelfde methode als get_today() maar dan 7 dagen terug.
 
         Geeft terug:
-            dict met verbruik en kostprijs van het afgelopen jaar
+            dict met verbruik en kostprijs van de laatste 7 dagen
         """
-        df = self._load_all()
+        df = self._load_live_only()
 
         if df.empty:
-            return {"error": "Geen metingen beschikbaar"}
+            return {"error": "Geen live metingen beschikbaar"}
 
-        # Begin van het jaar = 365 dagen geleden
-        year_start = datetime.now() - timedelta(days=365)
+        # Beginpunt = 7 dagen geleden
+        week_start = datetime.now() - timedelta(days=7)
 
-        # Laatste meting voor het beginpunt
-        before_df = df[df["timestamp"] < year_start].sort_values("timestamp")
+        # Laatste meting voor het beginpunt = beginstand
+        before_df = df[df["timestamp"] < week_start].sort_values("timestamp")
 
         if before_df.empty:
-            # Geen meting van voor een jaar geleden — gebruik oudste meting
+            # Geen meting van 7 dagen geleden — gebruik oudste live meting
             before_df = df.sort_values("timestamp")
+            print("[INFO] Geen meting van 7 dagen geleden — oudste live meting gebruikt")
 
         baseline = before_df.iloc[-1]
-
-        # Huidige live meterstand
         live_data = self.meter.get_summary()
 
         # Verbruik = live stand - beginstand
-        peak_kwh = round(live_data.get("total_consumption_peak_kwh", 0)
-                         - baseline["total_consumption_peak_kwh"], 3)
-        off_peak_kwh = round(live_data.get("total_consumption_off_peak_kwh", 0)
-                             - baseline["total_consumption_off_peak_kwh"], 3)
-        inj_peak = round(live_data.get("total_injection_peak_kwh", 0)
-                         - baseline["total_injection_peak_kwh"], 3)
-        inj_off_peak = round(live_data.get("total_injection_off_peak_kwh", 0)
-                             - baseline["total_injection_off_peak_kwh"], 3)
-        gas_m3 = round(live_data.get("total_gas_m3", 0)
-                       - baseline["total_gas_m3"], 3)
+        peak_kwh = max(0, round(live_data.get("total_consumption_peak_kwh", 0)
+                                - baseline["total_consumption_peak_kwh"], 3))
+        off_peak_kwh = max(0, round(live_data.get("total_consumption_off_peak_kwh", 0)
+                                    - baseline["total_consumption_off_peak_kwh"], 3))
+        inj_peak = max(0, round(live_data.get("total_injection_peak_kwh", 0)
+                                - baseline["total_injection_peak_kwh"], 3))
+        inj_off_peak = max(0, round(live_data.get("total_injection_off_peak_kwh", 0)
+                                    - baseline["total_injection_off_peak_kwh"], 3))
+        gas_m3 = max(0, round(live_data.get("total_gas_m3", 0)
+                              - baseline["total_gas_m3"], 3))
 
-        # Negatieve waarden vermijden
-        peak_kwh = max(0, peak_kwh)
-        off_peak_kwh = max(0, off_peak_kwh)
-        inj_peak = max(0, inj_peak)
-        inj_off_peak = max(0, inj_off_peak)
-        gas_m3 = max(0, gas_m3)
-
-        # Kostprijs berekenen
         costs = self.calculator.calculate_daily_cost(
             peak_kwh=peak_kwh,
             off_peak_kwh=off_peak_kwh,
@@ -384,6 +417,89 @@ class DataManager:
             "injection_off_peak_kwh": inj_off_peak,
             "gas_m3": gas_m3,
             "costs": costs,
+        }
+
+    def get_month(self) -> dict:
+        """
+        Geef verbruik en kostprijs van de laatste 30 dagen terug.
+
+        Gebruikt enkel Fluvius data zodat de cumulatieve totalen
+        consistent zijn (geen mix met live metertotalen).
+
+        Opmerking: gas is niet beschikbaar in de Fluvius
+        elektriciteits-export — gas_m3 is altijd 0 hier.
+
+        Geeft terug:
+            dict met verbruik en kostprijs van de laatste 30 dagen
+        """
+        df     = self._load_fluvius_only()
+        cutoff = datetime.now() - timedelta(days=30)
+
+        filtered = df[df["timestamp"] >= cutoff]
+
+        if len(filtered) < 2:
+            return {"error": "Niet genoeg Fluvius metingen voor deze periode"}
+
+        return self._calculate_period_costs(filtered)
+
+    def get_year(self) -> dict:
+        """
+        Geef verbruik en kostprijs van het afgelopen jaar terug.
+
+        Gebruikt enkel Fluvius data zodat de cumulatieve totalen
+        consistent zijn. Vergelijkt eerste en laatste meting
+        binnen het jaarbereik.
+
+        Opmerking: gas is niet beschikbaar in de Fluvius
+        elektriciteits-export — gas_m3 is altijd 0 hier.
+
+        Geeft terug:
+            dict met verbruik en kostprijs van het afgelopen jaar
+        """
+        df     = self._load_fluvius_only()
+        cutoff = datetime.now() - timedelta(days=365)
+
+        # Laatste meting voor het beginpunt als baseline
+        before_df = df[df["timestamp"] < cutoff].sort_values("timestamp")
+
+        if before_df.empty:
+            # Geen meting van voor een jaar geleden — gebruik oudste meting
+            before_df = df.sort_values("timestamp")
+            print("[INFO] Geen meting van 365 dagen geleden — oudste meting gebruikt")
+
+        if df.empty:
+            return {"error": "Geen Fluvius metingen beschikbaar"}
+
+        baseline = before_df.iloc[-1]
+        last     = df.iloc[-1]
+
+        # Verbruik = laatste Fluvius meting - beginstand
+        peak_kwh     = max(0, round(last["total_consumption_peak_kwh"]
+                                    - baseline["total_consumption_peak_kwh"],     3))
+        off_peak_kwh = max(0, round(last["total_consumption_off_peak_kwh"]
+                                    - baseline["total_consumption_off_peak_kwh"], 3))
+        inj_peak     = max(0, round(last["total_injection_peak_kwh"]
+                                    - baseline["total_injection_peak_kwh"],       3))
+        inj_off_peak = max(0, round(last["total_injection_off_peak_kwh"]
+                                    - baseline["total_injection_off_peak_kwh"],   3))
+
+        # Kostprijs berekenen
+        costs = self.calculator.calculate_daily_cost(
+            peak_kwh=peak_kwh,
+            off_peak_kwh=off_peak_kwh,
+            peak_injection_kwh=inj_peak,
+            off_peak_injection_kwh=inj_off_peak,
+        )
+
+        return {
+            "period_start"              : baseline["timestamp"].strftime("%d/%m/%Y %H:%M"),
+            "period_end"                : last["timestamp"].strftime("%d/%m/%Y %H:%M"),
+            "consumption_peak_kwh"      : peak_kwh,
+            "consumption_off_peak_kwh"  : off_peak_kwh,
+            "injection_peak_kwh"        : inj_peak,
+            "injection_off_peak_kwh"    : inj_off_peak,
+            "gas_m3"                    : 0,   # niet beschikbaar in Fluvius elektriciteits-export
+            "costs"                     : costs,
         }
 
     def get_recent_measurements(self, limit: int = 10) -> list:
