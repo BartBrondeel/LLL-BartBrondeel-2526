@@ -243,11 +243,11 @@ class PriceCalculator:
         hourly = self.calculate_hourly_cost(power_w=power_w, tariff=tariff)
 
         return {
-            "tijdstip"        : datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-            "huidig_tarief"   : "piek" if tariff == 1 else "dal",
-            "piek_prijs"      : self.peak_price,
-            "dal_prijs"       : self.off_peak_price,
-            "injectie_piek"   : self.injection_peak_price,
-            "injectie_dal"    : self.injection_off_peak_price,
-            "huidig_vermogen" : hourly,
+            "timestamp": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+            "current_tariff": "peak" if tariff == 1 else "off_peak",
+            "peak_price": self.peak_price,
+            "off_peak_price": self.off_peak_price,
+            "injection_peak": self.injection_peak_price,
+            "injection_off_peak": self.injection_off_peak_price,
+            "current_power": hourly,
         }

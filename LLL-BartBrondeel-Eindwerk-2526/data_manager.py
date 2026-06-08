@@ -364,60 +364,26 @@ class DataManager:
         """
         Geef verbruik en kostprijs van de laatste 7 dagen terug.
 
-        Gebruikt live meterdata met baseline aanpak —
-        zelfde methode als get_today() maar dan 7 dagen terug.
-
-        Geeft terug:
-            dict met verbruik en kostprijs van de laatste 7 dagen
+        Filtert de live metingen tot exact 7 dagen terug.
+        Als er geen meting is van precies 7 dagen geleden,
+        wordt de eerste beschikbare meting binnen de 7 dagen gebruikt.
         """
         df = self._load_live_only()
 
         if df.empty:
             return {"error": "Geen live metingen beschikbaar"}
 
-        # Beginpunt = 7 dagen geleden
+        # Beginpunt = exact 7 dagen geleden
         week_start = datetime.now() - timedelta(days=7)
 
-        # Laatste meting voor het beginpunt = beginstand
-        before_df = df[df["timestamp"] < week_start].sort_values("timestamp")
+        # Filter enkel metingen binnen de laatste 7 dagen
+        week_df = df[df["timestamp"] >= week_start].sort_values("timestamp")
 
-        if before_df.empty:
-            # Geen meting van 7 dagen geleden — gebruik oudste live meting
-            before_df = df.sort_values("timestamp")
-            print("[INFO] Geen meting van 7 dagen geleden — oudste live meting gebruikt")
+        if len(week_df) < 2:
+            return {"error": "Niet genoeg live metingen voor deze periode"}
 
-        baseline = before_df.iloc[-1]
-        live_data = self.meter.get_summary()
-
-        # Verbruik = live stand - beginstand
-        peak_kwh = max(0, round(live_data.get("total_consumption_peak_kwh", 0)
-                                - baseline["total_consumption_peak_kwh"], 3))
-        off_peak_kwh = max(0, round(live_data.get("total_consumption_off_peak_kwh", 0)
-                                    - baseline["total_consumption_off_peak_kwh"], 3))
-        inj_peak = max(0, round(live_data.get("total_injection_peak_kwh", 0)
-                                - baseline["total_injection_peak_kwh"], 3))
-        inj_off_peak = max(0, round(live_data.get("total_injection_off_peak_kwh", 0)
-                                    - baseline["total_injection_off_peak_kwh"], 3))
-        gas_m3 = max(0, round(live_data.get("total_gas_m3", 0)
-                              - baseline["total_gas_m3"], 3))
-
-        costs = self.calculator.calculate_daily_cost(
-            peak_kwh=peak_kwh,
-            off_peak_kwh=off_peak_kwh,
-            peak_injection_kwh=inj_peak,
-            off_peak_injection_kwh=inj_off_peak,
-        )
-
-        return {
-            "period_start": baseline["timestamp"].strftime("%d/%m/%Y %H:%M"),
-            "period_end": datetime.now().strftime("%d/%m/%Y %H:%M"),
-            "consumption_peak_kwh": peak_kwh,
-            "consumption_off_peak_kwh": off_peak_kwh,
-            "injection_peak_kwh": inj_peak,
-            "injection_off_peak_kwh": inj_off_peak,
-            "gas_m3": gas_m3,
-            "costs": costs,
-        }
+        # Gebruik eerste en laatste meting binnen de 7 dagen
+        return self._calculate_period_costs(week_df)
 
     def get_month(self) -> dict:
         """
