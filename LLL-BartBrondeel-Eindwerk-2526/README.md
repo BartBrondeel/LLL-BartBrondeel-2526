@@ -26,6 +26,21 @@ Een webapplicatie gebouwd met Python en Flask die:
 | `FluviusImporter` | fluvius_importer.py | Historische Fluvius CSV importeren |
 | `EntsoEApi` | entsoe_api.py | DAY AHEAD prijzen via ENTSO-E API |
 
+
+## Belangrijke architectuurkeuze — dataseparatie
+
+Het project werkt met twee incompatibele datasets die **nooit gemengd mogen worden**:
+
+| Dataset | Herkomst | Cumulatieve teller | Gasdata |
+|---------|----------|--------------------|---------|
+| Fluvius historisch | CSV export Mijn Fluvius | Begint bij 0 op importdatum | Niet aanwezig (altijd 0) |
+| Live meterdata | HomeWizard P1 via WiFi | Echte metertotalen (vanaf installatie, jaren geleden) | Aanwezig |
+
+Als je deze twee datasets zou mengen voor berekeningen, krijg je totaal foute kostprijzen (verschil van duizenden kWh). De `DataManager` klasse lost dit op via twee aparte laadmethoden:
+- `_load_fluvius_only()` → voor maand- en jaaroverzicht
+- `_load_live_only()` → voor dag- en weekoverzicht
+
+
 ## Status
 
 Project volledig afgerond ✅
@@ -143,6 +158,15 @@ energie_dashboard/
 | HomeWizard P1 meter | Lokale WiFi API | Live vermogen, fase data, gas |
 | ENTSO-E Transparency Platform | REST API | DAY AHEAD uurprijzen België |
 | Fluvius (Mijn Fluvius) | CSV export | Historische kwartierdata |
+
+
+## Bekende beperkingen
+
+- De meter moet bereikbaar zijn op hetzelfde WiFi-netwerk. Als dat niet het geval is, valt de app automatisch terug op simulatiedata.
+- DAY AHEAD prijzen voor morgen zijn pas beschikbaar vanaf ±13:00.
+- Gasdata is niet aanwezig in de Fluvius elektriciteits-export — bij maand/jaar overzicht is gas altijd 0.
+- Negatieve energieprijzen zijn mogelijk tijdens zonnige periodes (overproductie op het net).
+
 
 ## Auteur
 

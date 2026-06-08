@@ -3,12 +3,16 @@
   app.py — Energie Dashboard
   Student:   Bart Brondeel
   Opleiding: Graduaat Programmeren - Odisee
-  Versie:    0.5 — DataManager + automatisch opslaan toegevoegd
+  Versie:    1.0 — Eindversie
 
-  Wijziging t.o.v. sessie 4:
-  - DataManager geïmporteerd
-  - APScheduler toegevoegd voor automatisch opslaan (elke minuut)
-  - Nieuwe routes: /history, /history/today, /history/week, /history/month
+  Bevat:
+  - Flask webserver met alle routes
+  - 6 OOP klassen: Config, HomeWizardMeter, PriceCalculator,
+    DataManager, FluviusImporter, EntsoEApi
+  - APScheduler: automatisch meting opslaan elke minuut
+  - Python logging naar bestand en terminal
+  - Foutafhandeling voor 404 en 500 errors
+  - Simulatiemodus als meter niet bereikbaar is
 =============================================================
 """
 
