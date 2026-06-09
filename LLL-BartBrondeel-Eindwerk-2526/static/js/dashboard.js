@@ -333,20 +333,20 @@ async function loadHistory(period = "today") {
 
         // Verbruik
         document.getElementById("hist-peak-kwh").textContent =
-            data.consumption_peak_kwh.toFixed(3);
+            data.consumption_peak_kwh.toFixed(2);
         document.getElementById("hist-offpeak-kwh").textContent =
-            data.consumption_off_peak_kwh.toFixed(3);
+            data.consumption_off_peak_kwh.toFixed(2);
 
         // Injectie totaal
         const totalInjection = (
             (data.injection_peak_kwh || 0) +
             (data.injection_off_peak_kwh || 0)
-        ).toFixed(3);
+        ).toFixed(2);
         document.getElementById("hist-injection-kwh").textContent = totalInjection;
 
         // Gas
         document.getElementById("hist-gas").textContent =
-            (data.gas_m3 || 0).toFixed(3);
+            (data.gas_m3 || 0).toFixed(2);
 
         // Netto kostprijs — groen als negatief (je hebt verdiend!)
         const netCost = data.costs.net_cost_eur;
